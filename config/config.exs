@@ -11,6 +11,9 @@ config :contact360,
   ecto_repos: [Contact360.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+config :triplex, repo: Contact360.Repo
+
+
 # Configures the endpoint
 config :contact360, Contact360Web.Endpoint,
   url: [host: "localhost"],
