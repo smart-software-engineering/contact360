@@ -57,7 +57,11 @@ defmodule Contact360.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
-      {:bandit, "~> 1.2"}
+      {:bandit, "~> 1.2"},
+      {:triplex, "~> 1.3"},
+      {:req, "~> 0.4.14"},
+      {:ueberauth, "~> 0.10.8"},
+      {:ueberauth_bexio, "~> 0.1.1"}
     ]
   end
 
