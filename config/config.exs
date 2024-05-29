@@ -13,7 +13,6 @@ config :contact360,
 
 config :triplex, repo: Contact360.Repo
 
-
 # Configures the endpoint
 config :contact360, Contact360Web.Endpoint,
   url: [host: "localhost"],
