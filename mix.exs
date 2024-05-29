@@ -62,7 +62,10 @@ defmodule Contact360.MixProject do
       {:req, "~> 0.4.14"},
       {:ueberauth, "~> 0.10.8"},
       {:ueberauth_bexio, "~> 0.1.1"},
-      {:bexio_api_client, "~> 0.2.20"}
+      {:bexio_api_client, "~> 0.2.20"},
+
+      {:gen_stage, "~> 1.2"},
+      {:broadway, "~> 1.0"}
     ]
   end
 
