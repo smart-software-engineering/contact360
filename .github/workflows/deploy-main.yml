@@ -16,5 +16,3 @@ jobs:
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - run: |
           flyctl deploy --remote-only
-#            --build-secret PETAL_LICENSE_KEY=${{ secrets.PETAL_LICENSE_KEY }} \
-#            --build-secret PETAL_FINGERPRINT=${{ secrets.PETAL_FINGERPRINT }}
