@@ -24,18 +24,33 @@ defmodule Contact360.Clients do
   @doc """
   Gets a single client.
 
-  Raises `Ecto.NoResultsError` if the Client does not exist.
+  ## Examples
+
+      iex> get_client(123)
+      %Client{}
+
+      iex> get_client(456)
+      nil
+
+  """
+  def get_client(id), do: Repo.get(Client, id) |> Repo.preload(:schedulers)
+
+  @doc """
+  Gets a single client by it's company id and cloud_erp system.
 
   ## Examples
 
-      iex> get_client!(123)
+      iex> get_client_by_cloud_erp_and_company_id(:bexio, "123")
       %Client{}
 
-      iex> get_client!(456)
-      ** (Ecto.NoResultsError)
+      iex> get_client_by_cloud_erp_and_company_id(:unknown_erp, "123")
+      nil
 
   """
-  def get_client!(id), do: Repo.get!(Client, id)
+  def get_client_by_cloud_erp_and_company_id(cloud_erp, company_id),
+    do:
+      Repo.get_by(Client, company_id: company_id, cloud_erp: cloud_erp)
+      |> Repo.preload(:schedulers)
 
   @doc """
   Creates a client.
@@ -86,7 +101,15 @@ defmodule Contact360.Clients do
 
   """
   def delete_client(%Client{} = client) do
-    Repo.delete(client)
+    undeletable? =
+      list_months(client.id)
+      |> Enum.any?(fn m -> not m.unchargeable and m.active_users > 0 and m.bexio_ref == nil end)
+
+    if not undeletable? do
+      Repo.delete(client)
+    else
+      {:error, "Client has still active months!"}
+    end
   end
 
   @doc """
@@ -105,7 +128,7 @@ defmodule Contact360.Clients do
   alias Contact360.Clients.Month
 
   @doc """
-  Returns the list of client_months.
+  Returns the list of months for a specific client.
 
   ## Examples
 
@@ -113,8 +136,11 @@ defmodule Contact360.Clients do
       [%Month{}, ...]
 
   """
-  def list_client_months do
-    Repo.all(Month)
+  def list_months(%Client{id: id}), do: list_months(id)
+
+  def list_months(client_id) do
+    q = from m in Month, where: m.client_id == ^client_id
+    Repo.all(q)
   end
 
   @doc """
@@ -124,30 +150,31 @@ defmodule Contact360.Clients do
 
   ## Examples
 
-      iex> get_month!(123)
+      iex> get_month(123, 2024, 3)
       %Month{}
 
-      iex> get_month!(456)
-      ** (Ecto.NoResultsError)
+      iex> get_month(456, 2024, 3)
+      nil
 
   """
-  def get_month!(id), do: Repo.get!(Month, id)
+  def get_month(client_id, year, month),
+    do: Repo.get_by(Month, client_id: client_id, year: year, month: month)
 
   @doc """
   Creates a month.
 
   ## Examples
 
-      iex> create_month(%{field: value})
+      iex> create_month(%Client{id: id}, %{field: value})
       {:ok, %Month{}}
 
-      iex> create_month(%{field: bad_value})
+      iex> create_month(%Client{id: id}, %{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_month(attrs \\ %{}) do
-    %Month{}
-    |> Month.changeset(attrs)
+  def create_month(%Client{} = client, attrs \\ %{}) do
+    client
+    |> Month.create_changeset(attrs)
     |> Repo.insert()
   end
 
@@ -165,24 +192,8 @@ defmodule Contact360.Clients do
   """
   def update_month(%Month{} = month, attrs) do
     month
-    |> Month.changeset(attrs)
+    |> Month.update_changeset(attrs)
     |> Repo.update()
-  end
-
-  @doc """
-  Deletes a month.
-
-  ## Examples
-
-      iex> delete_month(month)
-      {:ok, %Month{}}
-
-      iex> delete_month(month)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_month(%Month{} = month) do
-    Repo.delete(month)
   end
 
   @doc """
@@ -195,7 +206,7 @@ defmodule Contact360.Clients do
 
   """
   def change_month(%Month{} = month, attrs \\ %{}) do
-    Month.changeset(month, attrs)
+    Month.update_changeset(month, attrs)
   end
 
   alias Contact360.Clients.Scheduler
@@ -214,22 +225,6 @@ defmodule Contact360.Clients do
   end
 
   @doc """
-  Gets a single scheduler.
-
-  Raises `Ecto.NoResultsError` if the Scheduler does not exist.
-
-  ## Examples
-
-      iex> get_scheduler!(123)
-      %Scheduler{}
-
-      iex> get_scheduler!(456)
-      ** (Ecto.NoResultsError)
-
-  """
-  def get_scheduler!(id), do: Repo.get!(Scheduler, id)
-
-  @doc """
   Creates a scheduler.
 
   ## Examples
@@ -241,9 +236,9 @@ defmodule Contact360.Clients do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_scheduler(attrs \\ %{}) do
-    %Scheduler{}
-    |> Scheduler.changeset(attrs)
+  def create_scheduler(%Client{} = client, attrs \\ %{}) do
+    client
+    |> Scheduler.create_changeset(attrs)
     |> Repo.insert()
   end
 
@@ -261,36 +256,7 @@ defmodule Contact360.Clients do
   """
   def update_scheduler(%Scheduler{} = scheduler, attrs) do
     scheduler
-    |> Scheduler.changeset(attrs)
+    |> Scheduler.update_changeset(attrs)
     |> Repo.update()
-  end
-
-  @doc """
-  Deletes a scheduler.
-
-  ## Examples
-
-      iex> delete_scheduler(scheduler)
-      {:ok, %Scheduler{}}
-
-      iex> delete_scheduler(scheduler)
-      {:error, %Ecto.Changeset{}}
-
-  """
-  def delete_scheduler(%Scheduler{} = scheduler) do
-    Repo.delete(scheduler)
-  end
-
-  @doc """
-  Returns an `%Ecto.Changeset{}` for tracking scheduler changes.
-
-  ## Examples
-
-      iex> change_scheduler(scheduler)
-      %Ecto.Changeset{data: %Scheduler{}}
-
-  """
-  def change_scheduler(%Scheduler{} = scheduler, attrs \\ %{}) do
-    Scheduler.changeset(scheduler, attrs)
   end
 end

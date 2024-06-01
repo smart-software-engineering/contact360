@@ -8,18 +8,19 @@ defmodule Contact360.ClientsFixtures do
   Generate a client.
   """
   def client_fixture(attrs \\ %{}) do
+    company_id = System.unique_integer([:positive]) |> to_string()
+
     {:ok, client} =
       attrs
       |> Enum.into(%{
         active: true,
         billing_address: "some billing_address\r\nHinter dem Walde\r\nInnerschweiz",
         billing_email: "abc@world.com",
-        company_id: 42,
+        company_id: company_id,
         company_name: "some company_name",
         registration_email: "def@world.com",
         cloud_erp: "bexio",
-        # TODO check in docs bexio
-        scopes: ["..."],
+        scopes: [],
         features: ["contacts", "items"],
         registration_user_id: 1
       })
@@ -31,23 +32,21 @@ defmodule Contact360.ClientsFixtures do
   @doc """
   Generate a month.
   """
-  def month_fixture(attrs \\ %{}) do
-    attrs =
-      Map.put_new_lazy(attrs, :client, fn ->
-        Map.from_struct(client_fixture())
-      end)
+  def month_fixture(client \\ client_fixture(), attrs \\ %{}) do
+    month = :rand.uniform(12)
+    year = :rand.uniform(25) + 2000
 
-    {:ok, month} =
-      attrs
-      |> Enum.into(%{
+    attrs =
+      Enum.into(attrs, %{
         active_users: 3,
         bexio_ref: "some bexio_ref",
         invoice_date: ~D[2024-05-28],
-        month: 1,
+        month: month,
         payed_date: ~D[2024-05-28],
-        year: 2024
+        year: year
       })
-      |> Contact360.Clients.create_month()
+
+    {:ok, month} = Contact360.Clients.create_month(client, attrs)
 
     month
   end
@@ -55,21 +54,17 @@ defmodule Contact360.ClientsFixtures do
   @doc """
   Generate a scheduler.
   """
-  def scheduler_fixture(attrs \\ %{}) do
+  def scheduler_fixture(client \\ client_fixture(), attrs \\ %{}) do
     attrs =
-      Map.put_new_lazy(attrs, :client, fn ->
-        Map.from_struct(client_fixture())
-      end)
-
-    {:ok, scheduler} =
-      attrs
-      |> Enum.into(%{
+      Enum.into(attrs, %{
         last_run: ~N[2024-05-28 14:17:00],
         data_synced_last_run: 0,
         data_synced_total: 0,
-        scheduler_name: :bexio_contacts
+        scheduler_name: :bexio_contacts,
+        schedule: "daily"
       })
-      |> Contact360.Clients.create_scheduler()
+
+    {:ok, scheduler} = Contact360.Clients.create_scheduler(client, attrs)
 
     scheduler
   end

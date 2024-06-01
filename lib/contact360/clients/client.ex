@@ -4,8 +4,8 @@ defmodule Contact360.Clients.Client do
 
   schema "clients" do
     field :active, :boolean, default: true
-    field :company_id, :integer
-    field :cloud_erp, Ecto.Enum, values: [:bexio], null: false
+    field :company_id, :string
+    field :cloud_erp, Ecto.Enum, values: [:bexio, :unknown], null: false
     field :registration_user_id, :integer
     field :company_name, :string
     field :registration_email, :string
@@ -13,6 +13,9 @@ defmodule Contact360.Clients.Client do
     field :billing_address, :string
     field :scopes, {:array, :string}
     field :features, {:array, :string}
+
+    has_many :months, Contact360.Clients.Month
+    has_many :schedulers, Contact360.Clients.Scheduler
 
     timestamps(type: :utc_datetime)
   end

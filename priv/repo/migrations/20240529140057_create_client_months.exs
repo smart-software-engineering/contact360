@@ -10,8 +10,8 @@ defmodule Contact360.Repo.Migrations.CreateClientMonths do
       add :invoice_date, :date, nullable: false
       add :payed_date, :date
       add :bexio_ref, :string
-      # TODO do not allow clients to be deleted if there are months open
-      add :client_id, references(:clients, on_delete: :restrict)
+      add :client_id, references(:clients, on_delete: :delete_all)
+      add :unchargeable, :boolean, default: false, nullable: false
 
       timestamps(type: :utc_datetime)
     end

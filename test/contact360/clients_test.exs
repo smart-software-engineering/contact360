@@ -14,34 +14,54 @@ defmodule Contact360.ClientsTest do
       company_name: nil,
       registration_email: nil,
       billing_email: nil,
-      billing_address: nil
+      billing_address: nil,
+      unchargeable: nil
     }
 
     test "list_clients/0 returns all clients" do
       client = client_fixture()
-      assert Clients.list_clients() == [client]
+
+      clients = Clients.list_clients()
+      assert Enum.count(clients) == 1
+      assert assert_equal_client(hd(clients), client)
     end
 
-    test "get_client!/1 returns the client with given id" do
+    test "get_client/1 returns the client with given id" do
       client = client_fixture()
-      assert Clients.get_client!(client.id) == client
+      assert_equal_client(client, Clients.get_client(client.id))
+    end
+
+    test "get_client_by_cloud_erp_and_company_name/1 returns the client with correct information" do
+      client = client_fixture()
+
+      assert_equal_client(
+        client,
+        Clients.get_client_by_cloud_erp_and_company_id(client.cloud_erp, client.company_id)
+      )
+    end
+
+    test "get_client_by_cloud_erp_and_company_name/1 returns nothing if either one is wrong" do
+      client = client_fixture()
+      refute Clients.get_client_by_cloud_erp_and_company_id(:unknown, client.company_id)
+      refute Clients.get_client_by_cloud_erp_and_company_id(client.cloud_erp, "abc")
     end
 
     test "create_client/1 with valid data creates a client" do
       valid_attrs = %{
         active: true,
-        company_id: 55,
+        company_id: "55",
         company_name: "some company_name",
         registration_email: "me2@world.com",
         registration_user_id: 1,
         scopes: ["a"],
         features: ["items"],
-        cloud_erp: "bexio"
+        cloud_erp: "bexio",
+        unchargeable: false
       }
 
       assert {:ok, %Client{} = client} = Clients.create_client(valid_attrs)
       assert client.active == true
-      assert client.company_id == 55
+      assert client.company_id == "55"
       assert client.company_name == "some company_name"
       assert client.registration_email == "me2@world.com"
       assert client.registration_user_id == 1
@@ -59,7 +79,7 @@ defmodule Contact360.ClientsTest do
 
       update_attrs = %{
         active: false,
-        company_id: 43,
+        company_id: "43",
         company_name: "some updated company_name",
         registration_email: "meu@updated.com",
         billing_email: "billing2@updated.com",
@@ -70,7 +90,7 @@ defmodule Contact360.ClientsTest do
 
       assert {:ok, %Client{} = client} = Clients.update_client(client, update_attrs)
       assert client.active == false
-      assert client.company_id == 43
+      assert client.company_id == "43"
       assert client.company_name == "some updated company_name"
       assert client.registration_email == "meu@updated.com"
       assert client.billing_email == "billing2@updated.com"
@@ -82,13 +102,22 @@ defmodule Contact360.ClientsTest do
     test "update_client/2 with invalid data returns error changeset" do
       client = client_fixture()
       assert {:error, %Ecto.Changeset{}} = Clients.update_client(client, @invalid_attrs)
-      assert client == Clients.get_client!(client.id)
+      assert_equal_client(client, Clients.get_client(client.id))
     end
 
     test "delete_client/1 deletes the client" do
       client = client_fixture()
+      month_fixture(client, %{unchargeable: true})
       assert {:ok, %Client{}} = Clients.delete_client(client)
-      assert_raise Ecto.NoResultsError, fn -> Clients.get_client!(client.id) end
+
+      refute Clients.get_client(client.id)
+    end
+
+    test "cannot delete_client/1 a client with active months" do
+      client = client_fixture()
+      month_fixture(client, %{unchargeable: false, active_users: 1, bexio_ref: nil})
+      assert {:error, _} = Clients.delete_client(client)
+      assert Clients.get_client(client.id)
     end
 
     test "change_client/1 returns a client changeset" do
@@ -108,7 +137,8 @@ defmodule Contact360.ClientsTest do
       active_users: nil,
       invoice_date: nil,
       payed_date: nil,
-      bexio_ref: nil
+      bexio_ref: nil,
+      unchargeable: nil
     }
 
     setup do
@@ -116,30 +146,30 @@ defmodule Contact360.ClientsTest do
       %{client: client}
     end
 
-    test "list_client_months/0 returns all client_months", %{client: client} do
-      IO.inspect(client, label: "Client")
-      month = month_fixture(%{client_id: client.id})
-      assert Clients.list_client_months() == [month]
+    test "list_months/0 returns all client_months", %{client: client} do
+      month = month_fixture(client)
+      assert Clients.list_months(client.id) == [month]
     end
 
-    @tag :pending
     test "get_month!/1 returns the month with given id" do
       month = month_fixture()
-      assert Clients.get_month!(month.id) == month
+      assert_equal_month(month, Clients.get_month(month.client_id, month.year, month.month))
     end
 
-    @tag :pending
     test "create_month/1 with valid data creates a month" do
+      client = client_fixture()
+
       valid_attrs = %{
         month: 42,
         year: 42,
         active_users: 42,
         invoice_date: ~D[2024-05-28],
         payed_date: ~D[2024-05-28],
-        bexio_ref: "some bexio_ref"
+        bexio_ref: "some bexio_ref",
+        unchargeable: false
       }
 
-      assert {:ok, %Month{} = month} = Clients.create_month(valid_attrs)
+      assert {:ok, %Month{} = month} = Clients.create_month(client, valid_attrs)
       assert month.month == 42
       assert month.year == 42
       assert month.active_users == 42
@@ -148,18 +178,15 @@ defmodule Contact360.ClientsTest do
       assert month.bexio_ref == "some bexio_ref"
     end
 
-    @tag :pending
     test "create_month/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Clients.create_month(@invalid_attrs)
+      client = client_fixture()
+      assert {:error, %Ecto.Changeset{}} = Clients.create_month(client, @invalid_attrs)
     end
 
-    @tag :pending
     test "update_month/2 with valid data updates the month" do
       month = month_fixture()
 
       update_attrs = %{
-        month: 43,
-        year: 43,
         active_users: 43,
         invoice_date: ~D[2024-05-29],
         payed_date: ~D[2024-05-29],
@@ -167,29 +194,18 @@ defmodule Contact360.ClientsTest do
       }
 
       assert {:ok, %Month{} = month} = Clients.update_month(month, update_attrs)
-      assert month.month == 43
-      assert month.year == 43
       assert month.active_users == 43
       assert month.invoice_date == ~D[2024-05-29]
       assert month.payed_date == ~D[2024-05-29]
       assert month.bexio_ref == "some updated bexio_ref"
     end
 
-    @tag :pending
     test "update_month/2 with invalid data returns error changeset" do
       month = month_fixture()
       assert {:error, %Ecto.Changeset{}} = Clients.update_month(month, @invalid_attrs)
-      assert month == Clients.get_month!(month.id)
+      assert month == Clients.get_month(month.client_id, month.year, month.month)
     end
 
-    @tag :pending
-    test "delete_month/1 deletes the month" do
-      month = month_fixture()
-      assert {:ok, %Month{}} = Clients.delete_month(month)
-      assert_raise Ecto.NoResultsError, fn -> Clients.get_month!(month.id) end
-    end
-
-    @tag :pending
     test "change_month/1 returns a month changeset" do
       month = month_fixture()
       assert %Ecto.Changeset{} = Clients.change_month(month)
@@ -201,62 +217,77 @@ defmodule Contact360.ClientsTest do
 
     import Contact360.ClientsFixtures
 
-    @invalid_attrs %{scheduler_name: nil, last_run: nil}
+    @invalid_attrs %{scheduler_name: nil, last_run: nil, schedule: nil}
 
-    @tag :pending
     test "list_schedulers/0 returns all schedulers" do
       scheduler = scheduler_fixture()
       assert Clients.list_schedulers() == [scheduler]
     end
 
-    @tag :pending
-    test "get_scheduler!/1 returns the scheduler with given id" do
-      scheduler = scheduler_fixture()
-      assert Clients.get_scheduler!(scheduler.id) == scheduler
-    end
-
-    @tag :pending
     test "create_scheduler/1 with valid data creates a scheduler" do
-      valid_attrs = %{scheduler_name: :bexio_contacts, last_run: ~N[2024-05-28 14:17:00]}
+      valid_attrs = %{
+        scheduler_name: :bexio_contacts,
+        last_run: ~N[2024-05-28 14:17:00],
+        schedule: "yearly"
+      }
 
-      assert {:ok, %Scheduler{} = scheduler} = Clients.create_scheduler(valid_attrs)
+      client = client_fixture()
+
+      assert {:ok, %Scheduler{} = scheduler} = Clients.create_scheduler(client, valid_attrs)
       assert scheduler.scheduler_name == :bexio_contacts
       assert scheduler.last_run == ~N[2024-05-28 14:17:00]
+      assert scheduler.schedule == "yearly"
     end
 
-    @tag :pending
     test "create_scheduler/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Clients.create_scheduler(@invalid_attrs)
+      client = client_fixture()
+      assert {:error, %Ecto.Changeset{}} = Clients.create_scheduler(client, @invalid_attrs)
     end
 
-    @tag :pending
     test "update_scheduler/2 with valid data updates the scheduler" do
       scheduler = scheduler_fixture()
-      update_attrs = %{scheduler_name: :bexio_items, last_run: ~N[2024-05-29 14:17:00]}
+      update_attrs = %{last_run: ~N[2024-05-29 14:17:00], schedule: "monthly"}
 
       assert {:ok, %Scheduler{} = scheduler} = Clients.update_scheduler(scheduler, update_attrs)
-      assert scheduler.scheduler_name == :bexio_items
+      assert scheduler.schedule == "monthly"
       assert scheduler.last_run == ~N[2024-05-29 14:17:00]
     end
 
-    @tag :pending
     test "update_scheduler/2 with invalid data returns error changeset" do
       scheduler = scheduler_fixture()
       assert {:error, %Ecto.Changeset{}} = Clients.update_scheduler(scheduler, @invalid_attrs)
-      assert scheduler == Clients.get_scheduler!(scheduler.id)
+      scheduler_db = Clients.list_schedulers() |> Enum.find(&(&1.id == scheduler.id))
+      assert_equal_scheduler(scheduler, scheduler_db)
     end
+  end
 
-    @tag :pending
-    test "delete_scheduler/1 deletes the scheduler" do
-      scheduler = scheduler_fixture()
-      assert {:ok, %Scheduler{}} = Clients.delete_scheduler(scheduler)
-      assert_raise Ecto.NoResultsError, fn -> Clients.get_scheduler!(scheduler.id) end
-    end
+  defp assert_equal_client(a, b) do
+    assert a.active == b.active
+    assert a.billing_address == b.billing_address
+    assert a.billing_email == b.billing_email
+    assert a.cloud_erp == b.cloud_erp
+    assert a.company_id == b.company_id
+    assert a.company_name == b.company_name
+    assert a.features == b.features
+    assert a.registration_email == b.registration_email
+    assert a.registration_user_id == b.registration_user_id
+    assert a.scopes == b.scopes
+    assert a.id == b.id
+  end
 
-    @tag :pending
-    test "change_scheduler/1 returns a scheduler changeset" do
-      scheduler = scheduler_fixture()
-      assert %Ecto.Changeset{} = Clients.change_scheduler(scheduler)
-    end
+  defp assert_equal_month(a, b) do
+    assert a.active_users == b.active_users
+    assert a.client_id == b.client_id
+    assert a.month == b.month
+    assert a.year == b.year
+    assert a.invoice_date == b.invoice_date
+    assert a.payed_date == b.payed_date
+    assert a.bexio_ref == b.bexio_ref
+  end
+
+  defp assert_equal_scheduler(a, b) do
+    assert a.scheduler_name == b.scheduler_name
+    assert a.last_run == b.last_run
+    assert a.schedule == b.schedule
   end
 end

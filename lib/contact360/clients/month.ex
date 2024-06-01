@@ -13,16 +13,31 @@ defmodule Contact360.Clients.Month do
     field :invoice_date, :date
     field :payed_date, :date
     field :bexio_ref, :string
+    field :unchargeable, :boolean, default: false
 
     timestamps(type: :utc_datetime)
   end
 
   @doc false
-  def changeset(month, attrs) do
+  def create_changeset(client, attrs) do
+    client
+    |> Ecto.build_assoc(:months)
+    |> cast(attrs, [
+      :year,
+      :month,
+      :active_users,
+      :invoice_date,
+      :payed_date,
+      :bexio_ref,
+      :unchargeable
+    ])
+    |> validate_required([:year, :month, :active_users, :unchargeable])
+  end
+
+  @doc false
+  def update_changeset(month, attrs) do
     month
-    |> cast(attrs, [:year, :month, :active_users, :invoice_date, :payed_date, :bexio_ref])
-    |> validate_required([:year, :month, :active_users])
-    # probably wrong, need to think about that one
-    |> cast_assoc(:client)
+    |> cast(attrs, [:active_users, :invoice_date, :payed_date, :bexio_ref, :unchargeable])
+    |> validate_required([:active_users, :unchargeable])
   end
 end

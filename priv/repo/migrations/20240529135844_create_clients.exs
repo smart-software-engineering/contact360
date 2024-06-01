@@ -4,7 +4,7 @@ defmodule Contact360.Repo.Migrations.CreateClients do
   def change do
     create table(:clients) do
       add :cloud_erp, :string, null: false
-      add :company_id, :integer, null: false
+      add :company_id, :string, null: false
       add :company_name, :string
       add :registration_email, :string, null: false
       add :registration_user_id, :integer, null: false
@@ -17,6 +17,6 @@ defmodule Contact360.Repo.Migrations.CreateClients do
       timestamps(type: :utc_datetime)
     end
 
-    create unique([:company_id])
+    create unique_index(:clients, [:company_id])
   end
 end
