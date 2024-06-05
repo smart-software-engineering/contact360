@@ -10,35 +10,47 @@ defmodule Contact360.DataRetrieval.BasicDataScheduler do
 
   ## Client API
   @doc """
+  Starts a scheduler for the given client id with unique name.
+  """
+  def start_scheduler(client_id, token) do
+    DynamicSupervisor.start_child(Contact360.DataRetrieval.BasicDataSupervisor, {__MODULE__, client_id: client_id, token: token})
+  end
+
+  @doc """
   Starts the basic data scheduler.
   """
   def start_link(opts \\ []) do
-    GenServer.start_link(__MODULE__, opts)
+    client_id = Keyword.get(opts, :client_id)
+    if client_id == nil do
+      {:error, "client_id is required"}
+    else
+    GenServer.start_link(__MODULE__, Keyword.put(opts, :name, process_name(client_id)))
+    end
   end
 
-  def contact_group(server, id), do: GenServer.call(server, {:contact_group, id})
-  def contact_sector(server, id), do: GenServer.call(server, {:contact_sector, id})
-  def salutation(server, id), do: GenServer.call(server, {:salutation, id})
-  def payment_type(server, id), do: GenServer.call(server, {:payment_type, id})
-  def account(server, id), do: GenServer.call(server, {:accounts, id})
-  def currency(server, id), do: GenServer.call(server, {:currency, id})
-  def language(server, id), do: GenServer.call(server, {:language, id})
-  def country(server, id), do: GenServer.call(server, {:country, id})
-  def unit(server, id), do: GenServer.call(server, {:unit, id})
-  def stock_area(server, id), do: GenServer.call(server, {:stock_area, id})
-  def stock_location(server, id), do: GenServer.call(server, {:stock_location, id})
+  def contact_group(client_id, id), do: GenServer.call(server, {:contact_group, id})
+  def contact_sector(client_id, id), do: GenServer.call(server, {:contact_sector, id})
+  def salutation(client_id, id), do: GenServer.call(server, {:salutation, id})
+  def payment_type(client_id, id), do: GenServer.call(server, {:payment_type, id})
+  def account(client_id, id), do: GenServer.call(server, {:accounts, id})
+  def currency(client_id, id), do: GenServer.call(server, {:currency, id})
+  def language(client_id, id), do: GenServer.call(server, {:language, id})
+  def country(client_id, id), do: GenServer.call(server, {:country, id})
+  def unit(client_id, id), do: GenServer.call(server, {:unit, id})
+  def stock_area(client_id, id), do: GenServer.call(server, {:stock_area, id})
+  def stock_location(client_id, id), do: GenServer.call(server, {:stock_location, id})
 
-  def contact_groups(server), do: GenServer.call(server, :contact_groups)
-  def contact_sectors(server), do: GenServer.call(server, :contact_sectors)
-  def salutations(server), do: GenServer.call(server, :salutations)
-  def payment_types(server), do: GenServer.call(server, :payment_types)
-  def accounts(server), do: GenServer.call(server, :accounts)
-  def currencies(server), do: GenServer.call(server, :currencies)
-  def languages(server), do: GenServer.call(server, :languages)
-  def countries(server), do: GenServer.call(server, :countries)
-  def units(server), do: GenServer.call(server, :units)
-  def stock_areas(server), do: GenServer.call(server, :stock_areas)
-  def stock_locations(server), do: GenServer.call(server, :stock_locations)
+  def contact_groups(client_id), do: GenServer.call(server, :contact_groups)
+  def contact_sectors(client_id), do: GenServer.call(server, :contact_sectors)
+  def salutations(client_id), do: GenServer.call(server, :salutations)
+  def payment_types(client_id), do: GenServer.call(server, :payment_types)
+  def accounts(client_id), do: GenServer.call(server, :accounts)
+  def currencies(client_id), do: GenServer.call(server, :currencies)
+  def languages(client_id), do: GenServer.call(server, :languages)
+  def countries(client_id), do: GenServer.call(server, :countries)
+  def units(client_id), do: GenServer.call(server, :units)
+  def stock_areas(client_id), do: GenServer.call(server, :stock_areas)
+  def stock_locations(client_id), do: GenServer.call(server, :stock_locations)
 
   ## Server API
   @impl GenServer
@@ -230,4 +242,6 @@ defmodule Contact360.DataRetrieval.BasicDataScheduler do
       _ -> {:reply, :error}
     end
   end
+
+  defp process_name(client_id), do: {:global, "basic_data_scheduler_#{client_id}"}
 end
