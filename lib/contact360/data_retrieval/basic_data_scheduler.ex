@@ -12,10 +12,8 @@ defmodule Contact360.DataRetrieval.BasicDataScheduler do
   @doc """
   Starts the basic data scheduler.
   """
-  def start_link(client_id, token, opts \\ []) do
-    without_items = Keyword.get(opts, :without_items, false)
-
-    GenServer.start_link(__MODULE__, {client_id, token, without_items}, opts)
+  def start_link(opts \\ []) do
+    GenServer.start_link(__MODULE__, opts)
   end
 
   def contact_group(server, id), do: GenServer.call(server, {:contact_group, id})
@@ -44,42 +42,50 @@ defmodule Contact360.DataRetrieval.BasicDataScheduler do
 
   ## Server API
   @impl GenServer
-  def init({client_id, token, without_items}) do
-    # TODO normally refresh token!
-    Process.send_after(self(), {:fetch_data, :contact_groups}, 1)
-    Process.send_after(self(), {:fetch_data, :contact_sectors}, 1)
-    Process.send_after(self(), {:fetch_data, :salutations}, 1)
-    Process.send_after(self(), {:fetch_data, :payment_types}, 1)
-    Process.send_after(self(), {:fetch_data, :titles}, 1)
-    Process.send_after(self(), {:fetch_data, :accounts}, 1)
-    Process.send_after(self(), {:fetch_data, :currencies}, 1)
-    Process.send_after(self(), {:fetch_data, :languages}, 1)
-    Process.send_after(self(), {:fetch_data, :countries}, 1)
+  def init(opts) do
+    client_id = Keyword.get(opts, :client_id)
+    token = Keyword.get(opts, :token)
+    without_items = Keyword.get(opts, :without_items, false)
 
-    if not without_items do
-      Process.send_after(self(), {:fetch_data, :units}, 1)
-      Process.send_after(self(), {:fetch_data, :stock_areas}, 1)
-      Process.send_after(self(), {:fetch_data, :stock_locations}, 1)
+    if client_id == nil or token == nil do
+      {:stop, {:missing_arguments, "client_id and token are required"}}
+    else
+      # TODO normally refresh token!
+      Process.send_after(self(), {:fetch_data, :contact_groups}, 1)
+      Process.send_after(self(), {:fetch_data, :contact_sectors}, 1)
+      Process.send_after(self(), {:fetch_data, :salutations}, 1)
+      Process.send_after(self(), {:fetch_data, :payment_types}, 1)
+      Process.send_after(self(), {:fetch_data, :titles}, 1)
+      Process.send_after(self(), {:fetch_data, :accounts}, 1)
+      Process.send_after(self(), {:fetch_data, :currencies}, 1)
+      Process.send_after(self(), {:fetch_data, :languages}, 1)
+      Process.send_after(self(), {:fetch_data, :countries}, 1)
+
+      if not without_items do
+        Process.send_after(self(), {:fetch_data, :units}, 1)
+        Process.send_after(self(), {:fetch_data, :stock_areas}, 1)
+        Process.send_after(self(), {:fetch_data, :stock_locations}, 1)
+      end
+
+      # TODO: rewrite to refresh token!
+      {:ok,
+       %{
+         client_id: client_id,
+         client: BexioApiClient.new(token),
+         contact_groups: %{},
+         contact_sectors: %{},
+         salutations: %{},
+         payment_types: %{},
+         accounts: %{},
+         currencies: %{},
+         languages: %{},
+         countries: %{},
+         units: %{},
+         stock_areas: %{},
+         stock_locations: %{},
+         titles: %{}
+       }}
     end
-
-    # TODO: rewrite to refresh token!
-    {:ok,
-     %{
-       client_id: client_id,
-       client: BexioApiClient.new(token),
-       contact_groups: %{},
-       contact_sectors: %{},
-       salutations: %{},
-       payment_types: %{},
-       accounts: %{},
-       currencies: %{},
-       languages: %{},
-       countries: %{},
-       units: %{},
-       stock_areas: %{},
-       stock_locations: %{},
-       titles: %{}
-     }}
   end
 
   @impl GenServer

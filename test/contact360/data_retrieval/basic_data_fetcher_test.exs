@@ -1,9 +1,8 @@
 defmodule Contact360.DataRetrieval.BasicDataFetcherTest do
-use Contact360.DataCase
+  use Contact360.DataCase
 
-alias Contact360.Clients
+  alias Contact360.Clients
 
-describe "clients" do
-
-end
+  describe "clients" do
+  end
 end

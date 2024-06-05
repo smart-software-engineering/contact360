@@ -4,6 +4,5 @@ defmodule Contact360.DataRetrieval.BasicDataSchedulerTest do
   alias Contact360.Clients
 
   describe "clients" do
-
   end
-  end
+end
