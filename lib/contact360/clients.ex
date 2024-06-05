@@ -105,10 +105,10 @@ defmodule Contact360.Clients do
       list_months(client.id)
       |> Enum.any?(fn m -> not m.unchargeable and m.active_users > 0 and m.bexio_ref == nil end)
 
-    if not undeletable? do
-      Repo.delete(client)
-    else
+    if undeletable? do
       {:error, "Client has still active months!"}
+    else
+      Repo.delete(client)
     end
   end
 
