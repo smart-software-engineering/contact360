@@ -1,4 +1,4 @@
-# This is a PoC GenServer, in reality I need to separate the API calls and the GenServer State
+# This is a PoC Genclient_id,  in reality I need to separate the API calls and the GenServer State
 defmodule Contact360.DataRetrieval.BasicDataScheduler do
   use GenServer
 
@@ -28,29 +28,29 @@ defmodule Contact360.DataRetrieval.BasicDataScheduler do
     end
   end
 
-  def contact_group(client_id, id), do: GenServer.call(server, {:contact_group, id})
-  def contact_sector(client_id, id), do: GenServer.call(server, {:contact_sector, id})
-  def salutation(client_id, id), do: GenServer.call(server, {:salutation, id})
-  def payment_type(client_id, id), do: GenServer.call(server, {:payment_type, id})
-  def account(client_id, id), do: GenServer.call(server, {:accounts, id})
-  def currency(client_id, id), do: GenServer.call(server, {:currency, id})
-  def language(client_id, id), do: GenServer.call(server, {:language, id})
-  def country(client_id, id), do: GenServer.call(server, {:country, id})
-  def unit(client_id, id), do: GenServer.call(server, {:unit, id})
-  def stock_area(client_id, id), do: GenServer.call(server, {:stock_area, id})
-  def stock_location(client_id, id), do: GenServer.call(server, {:stock_location, id})
+  def contact_group(client_id, id), do: GenServer.call(process_name(client_id),  {:contact_group, id})
+  def contact_sector(client_id, id), do: GenServer.call(process_name(client_id),  {:contact_sector, id})
+  def salutation(client_id, id), do: GenServer.call(process_name(client_id),  {:salutation, id})
+  def payment_type(client_id, id), do: GenServer.call(process_name(client_id),  {:payment_type, id})
+  def account(client_id, id), do: GenServer.call(process_name(client_id),  {:accounts, id})
+  def currency(client_id, id), do: GenServer.call(process_name(client_id),  {:currency, id})
+  def language(client_id, id), do: GenServer.call(process_name(client_id),  {:language, id})
+  def country(client_id, id), do: GenServer.call(process_name(client_id),  {:country, id})
+  def unit(client_id, id), do: GenServer.call(process_name(client_id),  {:unit, id})
+  def stock_area(client_id, id), do: GenServer.call(process_name(client_id),  {:stock_area, id})
+  def stock_location(client_id, id), do: GenServer.call(process_name(client_id),  {:stock_location, id})
 
-  def contact_groups(client_id), do: GenServer.call(server, :contact_groups)
-  def contact_sectors(client_id), do: GenServer.call(server, :contact_sectors)
-  def salutations(client_id), do: GenServer.call(server, :salutations)
-  def payment_types(client_id), do: GenServer.call(server, :payment_types)
-  def accounts(client_id), do: GenServer.call(server, :accounts)
-  def currencies(client_id), do: GenServer.call(server, :currencies)
-  def languages(client_id), do: GenServer.call(server, :languages)
-  def countries(client_id), do: GenServer.call(server, :countries)
-  def units(client_id), do: GenServer.call(server, :units)
-  def stock_areas(client_id), do: GenServer.call(server, :stock_areas)
-  def stock_locations(client_id), do: GenServer.call(server, :stock_locations)
+  def contact_groups(client_id), do: GenServer.call(process_name(client_id),  :contact_groups)
+  def contact_sectors(client_id), do: GenServer.call(process_name(client_id),  :contact_sectors)
+  def salutations(client_id), do: GenServer.call(process_name(client_id),  :salutations)
+  def payment_types(client_id), do: GenServer.call(process_name(client_id),  :payment_types)
+  def accounts(client_id), do: GenServer.call(process_name(client_id),  :accounts)
+  def currencies(client_id), do: GenServer.call(process_name(client_id),  :currencies)
+  def languages(client_id), do: GenServer.call(process_name(client_id),  :languages)
+  def countries(client_id), do: GenServer.call(process_name(client_id),  :countries)
+  def units(client_id), do: GenServer.call(process_name(client_id),  :units)
+  def stock_areas(client_id), do: GenServer.call(process_name(client_id),  :stock_areas)
+  def stock_locations(client_id), do: GenServer.call(process_name(client_id),  :stock_locations)
 
   ## Server API
   @impl GenServer
