@@ -63,6 +63,11 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# Bexio ID and Client Secrets, set for real during runtime.exs
+config :contact360, Contact360.DataRetrieval.BexioStaticDataScheduler,
+  bexio_client_id: "",
+  bexio_client_secret: ""
+
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

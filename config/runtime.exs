@@ -20,6 +20,13 @@ if System.get_env("PHX_SERVER") do
   config :contact360, Contact360Web.Endpoint, server: true
 end
 
+if config_env() != :test do
+  config :contact360, Contact360.DataRetrieval.BexioStaticDataScheduler,
+    bexio_client_id: System.get_env("BEXIO_CLIENT_ID") || raise("Needs BEXIO_CLIENT_ID"),
+    bexio_client_secret:
+      System.get_env("BEXIO_CLIENT_SECRET") || raise("Needs BEXIO_CLIENT_SECRET")
+end
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

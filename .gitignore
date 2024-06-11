@@ -37,3 +37,4 @@ npm-debug.log
 
 # Just testing out the elixir tools...
 /.elixir-tools/
+.envrc
