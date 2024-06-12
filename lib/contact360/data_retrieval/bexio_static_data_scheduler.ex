@@ -72,7 +72,6 @@ defmodule Contact360.DataRetrieval.BexioStaticDataScheduler do
         trigger_self(:stock_locations, 1)
       end
 
-      # TODO: rewrite to refresh token!
       {:ok,
        %{
          company_id: company_id,
