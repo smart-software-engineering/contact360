@@ -65,10 +65,20 @@ defmodule Contact360.Clients do
 
   """
   def create_client(attrs \\ %{}) do
-    %Client{}
-    |> Client.changeset(attrs)
-    |> Repo.insert()
+    client = Client.changeset(%Client{}, attrs)
+
+    if client.valid? do
+      Triplex.create_schema(tenant_name(attrs), Repo, fn tenant, repo ->
+          Triplex.migrate(tenant, repo) |> IO.inspect(label: "Migration")
+          repo.insert(client)
+      end)
+    else
+      {:error, client}
+    end
   end
+
+  defp tenant_name(%{company_id: company_id, cloud_erp: cloud_erp}),
+    do: "#{cloud_erp}_#{company_id}"
 
   @doc """
   Updates a client.
@@ -109,6 +119,7 @@ defmodule Contact360.Clients do
       {:error, "Client has still active months!"}
     else
       Repo.delete(client)
+      Triplex.drop(tenant_name(client))
     end
   end
 
