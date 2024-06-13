@@ -7,8 +7,6 @@ defmodule Contact360.DataRetrieval.BexioStaticDataScheduler do
   alias Contact360.DataRetrieval.BexioStaticDataFetcher
 
   @update_timer 1000 * 60 * 15
-  @bexio_client_id Application.compile_env!(:contact360, __MODULE__)[:bexio_client_id]
-  @bexio_client_secret Application.compile_env!(:contact360, __MODULE__)[:bexio_client_secret]
 
   ## Client API
   @doc """
@@ -75,7 +73,7 @@ defmodule Contact360.DataRetrieval.BexioStaticDataScheduler do
       {:ok,
        %{
          company_id: company_id,
-         client: BexioApiClient.new(@bexio_client_id, @bexio_client_secret, refresh_token),
+         client: BexioApiClient.new(bexio_client_id(), bexio_client_secret(), refresh_token),
          contact_groups: %{},
          contact_sectors: %{},
          salutations: %{},
@@ -240,4 +238,9 @@ defmodule Contact360.DataRetrieval.BexioStaticDataScheduler do
   end
 
   defp process_name(client_id), do: {:global, "bexio_static_data_scheduler_#{client_id}"}
+
+  defp bexio_client_id, do: Application.fetch_env!(:contact360, __MODULE__)[:bexio_client_id]
+
+  defp bexio_client_secret,
+    do: Application.fetch_env!(:contact360, __MODULE__)[:bexio_client_secret]
 end
