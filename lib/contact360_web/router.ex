@@ -17,6 +17,11 @@ defmodule Contact360Web.Router do
   scope "/", Contact360Web do
     pipe_through :browser
 
+    get "/auth/:provider", AuthController, :request
+    get "/auth//:provider/callback", AuthController, :callback
+    post "/auth/:provider/callback", AuthController, :callback
+    delete "/auth/logout", AuthController, :delete
+
     get "/", PageController, :home
   end
 

@@ -69,8 +69,8 @@ defmodule Contact360.Clients do
 
     if client.valid? do
       Triplex.create_schema(tenant_name(attrs), Repo, fn tenant, repo ->
-          Triplex.migrate(tenant, repo) |> IO.inspect(label: "Migration")
-          repo.insert(client)
+        Triplex.migrate(tenant, repo) |> IO.inspect(label: "Migration")
+        repo.insert(client)
       end)
     else
       {:error, client}

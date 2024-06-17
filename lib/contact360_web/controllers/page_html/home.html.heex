@@ -1,4 +1,10 @@
 <.flash_group flash={@flash} />
+<div class="flex gap-6">
+  <.link navigate={~p"/auth/bexio"}>Anmelden mit Bexio</.link>
+  <.link navigate={~p"/auth/bexio?scope=article_show%20contact_show%20email%20kb_invoice_show%20kb_offer_show%20kb_order_show%20note_show%20offline_access%20openid%20profile"}>Anmelden mit Bexio (Vollzugriff)</.link>
+  <.link navigate={~p"/auth/bexio"} method="delete">Abmelden</.link>
+</div>
+
 <div>Oben rechts: Anmelden / Registrieren</div>
 <div class="px-4 py-10 sm:px-6 sm:py-28 lg:px-8 xl:px-28 xl:py-32">
   <div class="mx-auto max-w-xl lg:mx-0">
