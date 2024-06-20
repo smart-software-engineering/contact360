@@ -24,19 +24,15 @@ defmodule Contact360Web.AuthController do
 
   def callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
     user = extract_user_info(auth)
-    session_user_name = String.to_existing_atom("#{auth.provider}_user")
 
     conn
-    |> login_user_into_auth(auth.provider, user, session_user_name)
+    |> login_user_into_auth(auth.provider, user)
     |> redirect(to: "/") # TODO: keep track of the last visited page
   end
 
   defp extract_user_info(%Ueberauth.Auth{} = auth) do
-    dbg()
-
     %{
       login_id: auth.uid,
-      login_id_2: auth.extra.raw_info.jwt_payload.login_id,
       firstname: auth.info.first_name,
       lastname: auth.info.last_name,
       email: auth.info.email,
@@ -46,18 +42,30 @@ defmodule Contact360Web.AuthController do
       refresh_token: auth.credentials.refresh_token,
       scopes: auth.credentials.scopes,
       locale: to_locale(auth.extra.raw_info.user["locale"]),
-      company_id: auth.extra.raw_info.jwt_payload.company_id
+      company_id: auth.credentials.other.jwt_payload.company_id
     }
   end
 
   defp to_locale("de_CH"), do: :de_CH
   defp to_locale("fr_CH"), do: :fr_CH
 
-  defp login_user_into_auth(conn, :bexio, user, session_user_name) do
+  defp login_user_into_auth(conn, :bexio, user) do
+    company = Contact360.Clients.get_client(user.company_id)
     IO.inspect(user, label: "Bexio Auth Info")
+    IO.inspect(company, label: "Company Info")
 
-    conn
-    |> configure_session(renew: true)
-    |> put_session(session_user_name, user)
+    if company == nil do
+      conn
+      |> configure_session(renew: true)
+      |> put_flash(:error, "Firma ist noch nicht registriert, bitte erst Firma registrieren!")
+      |> put_session(:user, nil)
+      |> put_session(:client, nil)
+    else
+      conn
+      |> configure_session(renew: true)
+      |> put_session(:user, user)
+      |> put_session(:client, user.company_id)
+      end
+
   end
 end
