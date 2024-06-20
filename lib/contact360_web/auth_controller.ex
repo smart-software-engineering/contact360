@@ -32,9 +32,11 @@ defmodule Contact360Web.AuthController do
   end
 
   defp extract_user_info(%Ueberauth.Auth{} = auth) do
-    IO.inspect(auth: "Bexio Auth Info")
+    dbg()
 
     %{
+      login_id: auth.uid,
+      login_id_2: auth.extra.raw_info.jwt_payload.login_id,
       firstname: auth.info.first_name,
       lastname: auth.info.last_name,
       email: auth.info.email,
@@ -43,7 +45,8 @@ defmodule Contact360Web.AuthController do
       expires_at: auth.credentials.expires_at,
       refresh_token: auth.credentials.refresh_token,
       scopes: auth.credentials.scopes,
-      locale: to_locale(auth.extra.locale)
+      locale: to_locale(auth.extra.raw_info.user["locale"]),
+      company_id: auth.extra.raw_info.jwt_payload.company_id
     }
   end
 
@@ -51,6 +54,8 @@ defmodule Contact360Web.AuthController do
   defp to_locale("fr_CH"), do: :fr_CH
 
   defp login_user_into_auth(conn, :bexio, user, session_user_name) do
+    IO.inspect(user, label: "Bexio Auth Info")
+
     conn
     |> configure_session(renew: true)
     |> put_session(session_user_name, user)
