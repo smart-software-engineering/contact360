@@ -4,6 +4,7 @@ defmodule Contact360Web.AuthController do
   plug Ueberauth
 
   alias Ueberauth.Strategy.Helpers
+  alias Contact360.Clients
 
   def request(conn, _params) do
     render(conn, "request.html", callback_url: Helpers.callback_url(conn))
@@ -54,6 +55,8 @@ defmodule Contact360Web.AuthController do
     company = Contact360.Clients.get_client_by_erp_and_erp_id(:bexio, user.company_id)
 
     if company == nil do
+      Clients.register_bexio_client(user)
+
       conn
       |> configure_session(renew: true)
       |> put_flash(:error, "Firma ist noch nicht registriert, bitte Firma zuerst registrieren.")

@@ -9,6 +9,16 @@ defmodule Contact360.Clients do
   alias Contact360.Clients.Client
   alias Contact360.Clients.Month
 
+  @needed_scopes [
+    "kb_invoice_show",
+    "openid",
+    "offline_access",
+    "contact_show",
+    "note_show",
+    "kb_offer_show",
+    "kb_order_show"
+  ]
+
   @doc """
   Returns the number of active clients currently registered with the system.
 
@@ -56,11 +66,25 @@ defmodule Contact360.Clients do
       {:error, %Ecto.Changeset{}}
 
   """
-  def register_client(attrs \\ %{}) do
-    client = Client.changeset(%Client{}, attrs)
+  def register_bexio_client(user) do
+    dbg()
+
+    registering_user_valid?(user)
+
+    client =
+      Client.changeset(%Client{}, %{
+        cloud_erp: :bexio,
+        erp_id: user.company_id,
+        active: true,
+        registration_user_id: user.login_id,
+        company_name: "not yet defined",
+        registration_email: user.email,
+        scopes: [],
+        features: ["clients", "items"]
+      })
 
     if client.valid? do
-      Triplex.create_schema(tenant_name(attrs), Repo, fn tenant, repo ->
+      Triplex.create_schema(tenant_name(client.data), Repo, fn tenant, repo ->
         Triplex.migrate(tenant, repo) |> IO.inspect(label: "Migration")
         repo.insert(client)
       end)
@@ -68,6 +92,30 @@ defmodule Contact360.Clients do
       {:error, client}
     end
   end
+
+  defp registering_user_valid?(nil), do: false
+
+  defp registering_user_valid?(%{refresh_token: refresh_token, token: token, scopes: scopes}) do
+    refresh_token != nil and enough_scopes?(scopes, @needed_scopes) and enough_permissions?(token)
+  end
+
+  defp enough_scopes?(scopes, needed),
+    do: Enum.all?(needed, fn needed_scope -> Enum.member?(scopes, needed_scope) end)
+
+  defp enough_permissions?(token) do
+    {:ok, permissions} = BexioApiClient.Others.get_access_information(token)
+    dbg()
+    # can_view_all?(permissions.kb_article_order) and
+    can_view_all?(permissions.article) and
+      can_view_all?(permissions.contact) and
+      can_view_all?(permissions.kb_offer) and
+      can_view_all?(permissions.kb_order) and
+      can_view_all?(permissions.kb_invoice) and
+      can_view_all?(permissions.stockmanagement)
+  end
+
+  defp can_view_all?(%{view: :all}), do: true
+  defp can_view_all?(_), do: false
 
   defp tenant_name(%{erp_id: erp_id, cloud_erp: cloud_erp}),
     do: "#{cloud_erp}_#{erp_id}"

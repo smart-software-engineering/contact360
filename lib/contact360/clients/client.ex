@@ -6,7 +6,7 @@ defmodule Contact360.Clients.Client do
     field :active, :boolean, default: true
     field :erp_id, :string
     field :cloud_erp, Ecto.Enum, values: [:bexio, :unknown], null: false
-    field :registration_user_id, :integer
+    field :registration_user_id, :string
     field :company_name, :string
     field :registration_email, :string
     field :billing_email, :string

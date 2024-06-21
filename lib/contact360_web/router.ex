@@ -18,11 +18,12 @@ defmodule Contact360Web.Router do
     pipe_through :browser
 
     get "/auth/:provider", AuthController, :request
-    get "/auth//:provider/callback", AuthController, :callback
+    get "/auth/:provider/callback", AuthController, :callback
     post "/auth/:provider/callback", AuthController, :callback
     delete "/auth/logout", AuthController, :delete
 
     get "/", PageController, :home
+    get "/register", PageController, :register
   end
 
   # Other scopes may use custom stacks.
