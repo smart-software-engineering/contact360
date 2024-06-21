@@ -1,4 +1,6 @@
 defmodule Contact360.ClientsFixtures do
+  alias Ecto.Repo
+
   @moduledoc """
   This module defines test helpers for creating
   entities via the `Contact360.Clients` context.
@@ -8,15 +10,15 @@ defmodule Contact360.ClientsFixtures do
   Generate a client.
   """
   def client_fixture(attrs \\ %{}) do
-    company_id = System.unique_integer([:positive]) |> to_string()
+    erp_id = System.unique_integer([:positive]) |> to_string()
 
-    {:ok, client} =
+    attrs =
       attrs
       |> Enum.into(%{
         active: true,
         billing_address: "some billing_address\r\nHinter dem Walde\r\nInnerschweiz",
         billing_email: "abc@world.com",
-        company_id: company_id,
+        erp_id: erp_id,
         company_name: "some company_name",
         registration_email: "def@world.com",
         cloud_erp: "bexio",
@@ -24,7 +26,10 @@ defmodule Contact360.ClientsFixtures do
         features: ["contacts", "items"],
         registration_user_id: 1
       })
-      |> Contact360.Clients.create_client()
+
+    changeset = Contact360.Clients.Client.changeset(%Contact360.Clients.Client{}, attrs)
+
+    {:ok, client} = Repo.insert(changeset)
 
     client
   end

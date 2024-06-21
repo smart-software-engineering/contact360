@@ -52,7 +52,7 @@ defmodule Contact360.DataRetrieval.BexioStaticDataScheduler do
     without_items = Keyword.get(opts, :without_items, false)
 
     if company_id == nil or refresh_token == nil do
-      {:stop, {:missing_arguments, "Bexio Client ID and token are required"}}
+      {:stop, {:missing_arguments, "Bexio Company ID and token are required"}}
     else
       trigger_self(:contact_groups, 1)
       trigger_self(:contact_sectors, 1)

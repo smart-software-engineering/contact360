@@ -4,7 +4,7 @@ defmodule Contact360.Clients.Client do
 
   schema "clients" do
     field :active, :boolean, default: true
-    field :company_id, :string
+    field :erp_id, :string
     field :cloud_erp, Ecto.Enum, values: [:bexio, :unknown], null: false
     field :registration_user_id, :integer
     field :company_name, :string
@@ -24,7 +24,7 @@ defmodule Contact360.Clients.Client do
   def changeset(client, attrs) do
     client
     |> cast(attrs, [
-      :company_id,
+      :erp_id,
       :company_name,
       :registration_email,
       :billing_email,
@@ -36,7 +36,7 @@ defmodule Contact360.Clients.Client do
       :features
     ])
     |> validate_required([
-      :company_id,
+      :erp_id,
       :company_name,
       :registration_email,
       :active,
@@ -45,7 +45,7 @@ defmodule Contact360.Clients.Client do
       :scopes,
       :features
     ])
-    |> unique_constraint(:company_id)
+    |> unique_constraint([:cloud_erp, :erp_id])
 
     # TODO: validate email
   end

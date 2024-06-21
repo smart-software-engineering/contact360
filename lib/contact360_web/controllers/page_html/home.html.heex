@@ -2,7 +2,11 @@
 
 <div class="flex gap-6 flex-row-reverse p-3">
   <.link navigate={~p"/auth/bexio"}>Anmelden mit Bexio</.link>
-  <.link navigate={~p"/auth/bexio?scope=article_show%20contact_show%20email%20kb_invoice_show%20kb_offer_show%20kb_order_show%20note_show%20offline_access%20openid%20profile"}>Anmelden mit Bexio (Vollzugriff)</.link>
+  <.link navigate={
+    ~p"/auth/bexio?scope=article_show%20contact_show%20email%20kb_invoice_show%20kb_offer_show%20kb_order_show%20note_show%20offline_access%20openid%20profile"
+  }>
+    Anmelden mit Bexio (Vollzugriff)
+  </.link>
   <.link navigate={~p"/auth/bexio"} method="delete">Abmelden</.link>
 </div>
 

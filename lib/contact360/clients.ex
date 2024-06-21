@@ -7,64 +7,56 @@ defmodule Contact360.Clients do
   alias Contact360.Repo
 
   alias Contact360.Clients.Client
+  alias Contact360.Clients.Month
 
   @doc """
-  Returns the list of clients.
+  Returns the number of active clients currently registered with the system.
 
   ## Examples
 
-      iex> list_clients()
-      [%Client{}, ...]
+      iex> count_active_clients()
+      13
 
   """
-  def list_clients do
-    Repo.all(Client)
+  def count_active_clients do
+    query =
+      from c in Client,
+        where: c.active == true,
+        select: count(c)
+
+    query
+    |> Repo.all()
+    |> hd()
   end
 
   @doc """
-  Gets a single client.
+  Gets a single client for a given erp and company id.
 
   ## Examples
 
-      iex> get_client(123)
+      iex> get_client(:bexio, "123")
       %Client{}
 
-      iex> get_client(456)
+      iex> get_client(:bexio, "456")
       nil
 
   """
-  def get_client(id), do: Repo.get(Client, id) |> Repo.preload(:schedulers)
-
-  @doc """
-  Gets a single client by it's company id and cloud_erp system.
-
-  ## Examples
-
-      iex> get_client_by_cloud_erp_and_company_id(:bexio, "123")
-      %Client{}
-
-      iex> get_client_by_cloud_erp_and_company_id(:unknown_erp, "123")
-      nil
-
-  """
-  def get_client_by_cloud_erp_and_company_id(cloud_erp, company_id),
-    do:
-      Repo.get_by(Client, company_id: company_id, cloud_erp: cloud_erp)
-      |> Repo.preload(:schedulers)
+  def get_client_by_erp_and_erp_id(erp, erp_id),
+    do: Repo.get_by(Client, cloud_erp: erp, erp_id: erp_id)
 
   @doc """
   Creates a client.
 
   ## Examples
 
-      iex> create_client(%{field: value})
+      iex> register_client(%{field: value})
       {:ok, %Client{}}
 
-      iex> create_client(%{field: bad_value})
+      iex> register_client(%{field: bad_value})
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_client(attrs \\ %{}) do
+  def register_client(attrs \\ %{}) do
     client = Client.changeset(%Client{}, attrs)
 
     if client.valid? do
@@ -77,8 +69,8 @@ defmodule Contact360.Clients do
     end
   end
 
-  defp tenant_name(%{company_id: company_id, cloud_erp: cloud_erp}),
-    do: "#{cloud_erp}_#{company_id}"
+  defp tenant_name(%{erp_id: erp_id, cloud_erp: cloud_erp}),
+    do: "#{cloud_erp}_#{erp_id}"
 
   @doc """
   Updates a client.
@@ -112,7 +104,7 @@ defmodule Contact360.Clients do
   """
   def delete_client(%Client{} = client) do
     undeletable? =
-      list_months(client.id)
+      list_months_for_client(client.id)
       |> Enum.any?(fn m -> not m.unchargeable and m.active_users > 0 and m.bexio_ref == nil end)
 
     if undeletable? do
@@ -124,33 +116,38 @@ defmodule Contact360.Clients do
   end
 
   @doc """
-  Returns an `%Ecto.Changeset{}` for tracking client changes.
-
-  ## Examples
-
-      iex> change_client(client)
-      %Ecto.Changeset{data: %Client{}}
-
-  """
-  def change_client(%Client{} = client, attrs \\ %{}) do
-    Client.changeset(client, attrs)
-  end
-
-  alias Contact360.Clients.Month
-
-  @doc """
   Returns the list of months for a specific client.
 
   ## Examples
 
-      iex> list_client_months()
+      iex> list_months_for_client(%Client{})
       [%Month{}, ...]
 
   """
-  def list_months(%Client{id: id}), do: list_months(id)
+  def list_months_for_client(%Client{id: id}), do: list_months_for_client(id)
 
-  def list_months(client_id) do
-    q = from m in Month, where: m.client_id == ^client_id
+  def list_months_for_client(client_id) do
+    q = from m in Month, where: m.client_id == ^client_id, order_by: [desc: :year, desc: :month]
+    Repo.all(q)
+  end
+
+  @doc """
+  Returns the list of open for invoice months
+
+  ## Examples
+
+      iex> list_invoiceable_months()
+      [%Month{}, ...]
+
+  """
+  def list_invoiceable_months() do
+    q =
+      from m in Month,
+        where: is_nil(m.invoice_date),
+        where: m.unchargeable == false,
+        where: m.active_users > 0,
+        order_by: [asc: :year, asc: :month]
+
     Repo.all(q)
   end
 
@@ -190,7 +187,22 @@ defmodule Contact360.Clients do
   end
 
   @doc """
-  Updates a month.
+  Updates the active users for a given month
+
+  ## Examples
+
+      iex> update_month_active_users(%Client{id: id})
+      {:ok, 1}
+
+  """
+  def update_month_active_users(_client) do
+    # this will be updated once a day and simply check how many users had the last login
+    # within a given month
+    {:ok, 0}
+  end
+
+  @doc """
+  Updates a month (with invoice information from bexio actually).
 
   ## Examples
 

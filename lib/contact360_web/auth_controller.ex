@@ -27,7 +27,8 @@ defmodule Contact360Web.AuthController do
 
     conn
     |> login_user_into_auth(auth.provider, user)
-    |> redirect(to: "/") # TODO: keep track of the last visited page
+    # TODO: keep track of the last visited page
+    |> redirect(to: "/")
   end
 
   defp extract_user_info(%Ueberauth.Auth{} = auth) do
@@ -50,14 +51,12 @@ defmodule Contact360Web.AuthController do
   defp to_locale("fr_CH"), do: :fr_CH
 
   defp login_user_into_auth(conn, :bexio, user) do
-    company = Contact360.Clients.get_client(user.company_id)
-    IO.inspect(user, label: "Bexio Auth Info")
-    IO.inspect(company, label: "Company Info")
+    company = Contact360.Clients.get_client_by_erp_and_erp_id(:bexio, user.company_id)
 
     if company == nil do
       conn
       |> configure_session(renew: true)
-      |> put_flash(:error, "Firma ist noch nicht registriert, bitte erst Firma registrieren!")
+      |> put_flash(:error, "Firma ist noch nicht registriert, bitte Firma zuerst registrieren.")
       |> put_session(:user, nil)
       |> put_session(:client, nil)
     else
@@ -65,7 +64,6 @@ defmodule Contact360Web.AuthController do
       |> configure_session(renew: true)
       |> put_session(:user, user)
       |> put_session(:client, user.company_id)
-      end
-
+    end
   end
 end
