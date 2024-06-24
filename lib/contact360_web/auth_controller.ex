@@ -4,7 +4,8 @@ defmodule Contact360Web.AuthController do
   plug Ueberauth
 
   alias Ueberauth.Strategy.Helpers
-  alias Contact360.Clients
+
+  require Logger
 
   def request(conn, _params) do
     render(conn, "request.html", callback_url: Helpers.callback_url(conn))
@@ -12,24 +13,47 @@ defmodule Contact360Web.AuthController do
 
   def delete(conn, _params) do
     conn
-    |> put_flash(:info, "You have been logged out!")
-    |> clear_session()
+    |> put_flash(:info, gettext("Sie wurden abgemeldet!"))
+    |> configure_session(dropped: true)
     |> redirect(to: "/")
   end
 
   def callback(%{assigns: %{ueberauth_failure: fails}} = conn, _params) do
     conn
-    |> put_flash(:error, "Failed to authenticate: #{inspect(fails)}")
+    |> put_flash(:error, gettext("Konnte nicht angemeldet werden:") <> " #{inspect(fails)}")
     |> redirect(to: "/")
   end
 
   def callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do
     user = extract_user_info(auth)
+    company = Contact360.Clients.get_client_by_erp_and_erp_id(:bexio, user.company_id)
 
-    conn
-    |> login_user_into_auth(auth.provider, user)
-    # TODO: keep track of the last visited page
-    |> redirect(to: "/")
+    cond do
+      company == nil and Enum.member?(user.scopes, "offline_access") ->
+        Logger.info(
+          "Benutzer hat sich angemeldet mit offline-access für die Registrierung der Firma"
+        )
+
+        redirect(conn, to: "/register/step2", assigns: %{user: user})
+
+      company == nil ->
+        conn
+        |> configure_session(renew: true)
+        |> put_flash(
+          :error,
+          gettext("Firma ist noch nicht registriert, bitte Firma zuerst registrieren.")
+        )
+        |> put_session(:user, nil)
+        |> put_session(:client, nil)
+        |> redirect(to: "/register/step1")
+
+      true ->
+        conn
+        |> configure_session(renew: true)
+        |> put_session(:user, user)
+        |> put_session(:client, user.company_id)
+        |> redirect(to: "/c/#{user.company_id}")
+    end
   end
 
   defp extract_user_info(%Ueberauth.Auth{} = auth) do
@@ -50,23 +74,4 @@ defmodule Contact360Web.AuthController do
 
   defp to_locale("de_CH"), do: :de_CH
   defp to_locale("fr_CH"), do: :fr_CH
-
-  defp login_user_into_auth(conn, :bexio, user) do
-    company = Contact360.Clients.get_client_by_erp_and_erp_id(:bexio, user.company_id)
-
-    if company == nil do
-      Clients.register_bexio_client(user)
-
-      conn
-      |> configure_session(renew: true)
-      |> put_flash(:error, "Firma ist noch nicht registriert, bitte Firma zuerst registrieren.")
-      |> put_session(:user, nil)
-      |> put_session(:client, nil)
-    else
-      conn
-      |> configure_session(renew: true)
-      |> put_session(:user, user)
-      |> put_session(:client, user.company_id)
-    end
-  end
 end

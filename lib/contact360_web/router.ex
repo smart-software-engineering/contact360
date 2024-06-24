@@ -22,8 +22,9 @@ defmodule Contact360Web.Router do
     post "/auth/:provider/callback", AuthController, :callback
     delete "/auth/logout", AuthController, :delete
 
-    get "/", PageController, :home
-    get "/register", PageController, :register
+    get "/", WelcomeController, :home
+    get "/register/step1", RegistrationController, :step1
+    get "/register/step2", RegistrationController, :step2
   end
 
   # Other scopes may use custom stacks.
