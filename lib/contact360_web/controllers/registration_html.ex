@@ -6,5 +6,7 @@ defmodule Contact360Web.RegistrationHTML do
   """
   use Contact360Web, :html
 
+  import Contact360Web.RegistrationHelper
+
   embed_templates "registration_html/*"
 end

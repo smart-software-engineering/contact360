@@ -1,18 +1,7 @@
 <.flash_group flash={@flash} />
 
 <div class="bg-white dark:bg-gray-900 py-24 sm:py-32">
-  <div class="mx-auto max-w-7xl px-6 lg:px-8">
-    <div class="mx-auto max-w-2xl lg:mx-0">
-      <h2 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
-        <%= gettext("Registrierung") %>
-      </h2>
-      <p class="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-        <%= gettext(
-          "Hier finden Sie alle wichtigen Informationen zum Ablauf der Registrierung, welche Daten in der Applikation gespeichert werden, wie oft die Daten synchronisiert werden sowie oft gestellte Fragen."
-        ) %>
-      </p>
-    </div>
-  </div>
+  <.registration_header />
 
   <nav aria-label="Registrierungsfortschritt" class="mx-auto max-w-7xl lg:px-8 mt-16">
     <ol role="list" class="space-y-4 md:flex md:space-x-8 md:space-y-0">
@@ -25,110 +14,55 @@
         </div>
       </li>
       <li class="md:flex-1">
-        <div
-          class="group flex flex-col border-l-4 border-gray-200 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4"
-        >
-          <span class="text-sm font-medium text-gray-500 dark:text-gray-300"><%= gettext("Schritt") %> 2</span>
+        <div class="group flex flex-col border-l-4 border-gray-200 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
+          <span class="text-sm font-medium text-gray-500 dark:text-gray-300">
+            <%= gettext("Schritt") %> 2
+          </span>
           <span class="text-sm font-medium dark:text-gray-300">Validieren des Benutzers</span>
         </div>
       </li>
       <li class="md:flex-1">
         <div class="group flex flex-col border-l-4 border-gray-200 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
-          <span class="text-sm font-medium text-gray-500 dark:text-gray-300"><%= gettext("Schritt") %> 3</span>
+          <span class="text-sm font-medium text-gray-500 dark:text-gray-300">
+            <%= gettext("Schritt") %> 3
+          </span>
           <span class="text-sm font-medium dark:text-gray-300">Aktivieren der Firma</span>
         </div>
       </li>
     </ol>
   </nav>
 
-  <div class="mx-auto max-w-7xl lg:px-8 mt-16">
-    <div class="flex gap-12">
-      <div class="flex-1 text-white">
-        <p>Erklärung + Screenshot</p>
-        <ol>
-          <li>1. Erklärung Synchronisierung</li>
-          <li>2. Ablauf Schritt 1: Registrierender Benutzer (Empfehlung: separater Benutzer)</li>
-          <li>3. Kontrolle der Berechtigungen, Prüfung ob Firma bereits vorhanden ist</li>
-          <li>5. Anzeige des Datenschutzes, Folgen der Registrierung</li>
-          <li>4. Anlegen der Scheduler, Start der Synchronisierung</li>
-          <li>
-            5. Benutzer mit "Admin"-Berechtigung + registrierender Benutzer sehen Admin-Board für "Deregistrierung"
-          </li>
-        </ol>
-      </div>
-      <div class="flex-1">
-        <div class="dark:text-white">
-          <.link navigate={
-            ~p"/auth/bexio?scope=article_show%20contact_show%20email%20kb_invoice_show%20kb_offer_show%20kb_order_show%20note_show%20offline_access%20openid%20profile"
-          }>
-            Registrieren mit Bexio
-          </.link>
-        </div>
-      </div>
+  <div class="mx-auto max-w-7xl lg:px-8 mt-16 dark:text-white">
+    <p>
+      Im ersten Schritt werden Sie gebeten, den Benutzer und sofern nötig, die Firma
+      auszuwählen, mit welcher Sie die Synchronisierung ausführen möchten. Dieser Benutzer
+      benötigt gewisse Berechtigungen:
+      <ul>
+        <li></li>
+      </ul>
+      Wir empfehlen, einen exklusiven Benutzer mit genau diesen Berechtigungen anzulegen,
+      welcher nur für die Synchronisierung verwendet wird.
+    </p>
+    <p>Nach der Auswahl dieses Benutzers erfolgt im nächsten eine Überprüfung des Benutzers
+      und der Firma, sowie eine ausführliche Erklärung, wie die Daten zwischen dem ERP (Bexio)
+      und dieser Software synchronisiert werden.</p>
+    <p>Haben Sie bereits eine Firma registriert und möchten nur den synchronisierenden Benutzer
+      ersetzen, dann können Sie dies ebenfalls über die Registrierung erledigen. Auch hier erfolgt die
+      Erklärung im nächsten Schritt.</p>
+    <p>Wenn Sie auf den Link unten klicken, werden Sie auf die folgende Seite weitergeleitet:</p>
+    <p>TODO: Screenshot der Registrierung</p>
+    <p>Sobald der Benutzer bestätigt wurde, werden Sie hier weitergeleitet.</p>
+    <div class="mt-16">
+      <.link
+        navigate={
+          ~p"/auth/bexio?scope=article_show%20contact_show%20email%20kb_invoice_show%20kb_offer_show%20kb_order_show%20note_show%20offline_access%20openid%20profile"
+        }
+        class="inline-flex items-center gap-x-2 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+      >
+        &raquo; Registrieren mit Bexio
+      </.link>
     </div>
   </div>
 
-  <div class="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8 lg:py-40">
-    <div class="mx-auto max-w-4xl divide-y divide-gray-900/10 dark:divide-white/10">
-      <h2 class="text-2xl font-bold leading-10 tracking-tight text-gray-900 dark:text-white">
-        <%= gettext("Häufig gestellte Fragen") %>
-      </h2>
-      <dl class="mt-10 space-y-6 divide-y divide-gray-900/10 dark:divide-white/10">
-        <div class="pt-6">
-          <dt>
-            <!-- Expand/collapse question button -->
-            <button
-              type="button"
-              class="flex w-full items-start justify-between text-left text-gray-900 dark:text-white"
-              aria-controls="faq-0"
-              aria-expanded="false"
-            >
-              <span class="text-base font-semibold leading-7">
-                <%= gettext("Kann ich meine Daten wieder löschen lassen?") %>
-              </span>
-              <span class="ml-6 flex h-7 items-center">
-                <!--
-                  Icon when question is collapsed.
-
-                  Item expanded: "hidden", Item collapsed: ""
-                -->
-                <svg
-                  class="hidden h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
-                </svg>
-                <!--
-                  Icon when question is expanded.
-
-                  Item expanded: "", Item collapsed: "hidden"
-                -->
-                <svg
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M18 12H6" />
-                </svg>
-              </span>
-            </button>
-          </dt>
-          <dd class="mt-2 pr-12" id="faq-0">
-            <p class="text-base leading-7 text-gray-600 dark:text-gray-300">
-              <%= gettext(
-                "Wenn man seinen Account schliesst, werden sämtliche gespeicherte Daten gelöscht und müssen bei einer erneuten Anmeldung auch wieder komplett synchronisiert werden."
-              ) %>
-            </p>
-          </dd>
-        </div>
-      </dl>
-    </div>
-  </div>
+  <.faq />
 </div>

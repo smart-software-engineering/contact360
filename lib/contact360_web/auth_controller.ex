@@ -34,7 +34,9 @@ defmodule Contact360Web.AuthController do
           "Benutzer hat sich angemeldet mit offline-access für die Registrierung der Firma"
         )
 
-        redirect(conn, to: "/register/step2", assigns: %{user: user})
+        conn
+        |> put_session(:user, user)
+        |> redirect(to: "/register/step2")
 
       company == nil ->
         conn

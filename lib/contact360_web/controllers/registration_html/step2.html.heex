@@ -1,139 +1,85 @@
 <.flash_group flash={@flash} />
 
 <div class="bg-white dark:bg-gray-900 py-24 sm:py-32">
-  <div class="mx-auto max-w-7xl px-6 lg:px-8">
-    <div class="mx-auto max-w-2xl lg:mx-0">
-      <h2 class="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
-        <%= gettext("Registrierung") %>
-      </h2>
-      <p class="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-        <%= gettext(
-          "Hier finden Sie alle wichtigen Informationen zum Ablauf der Registrierung, welche Daten in der Applikation gespeichert werden, wie oft die Daten synchronisiert werden sowie oft gestellte Fragen."
-        ) %>
-      </p>
-    </div>
-  </div>
+  <.registration_header />
 
   <nav aria-label="Registrierungsfortschritt" class="mx-auto max-w-7xl lg:px-8 mt-16">
     <ol role="list" class="space-y-4 md:flex md:space-x-8 md:space-y-0">
       <li class="md:flex-1">
-        <!-- Completed Step -->
-        <a class="group flex flex-col border-l-4 border-indigo-600 dark:border-indigo-500 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
-          <span class="text-sm font-medium text-indigo-600 dark:text-indigo-300">
+        <div class="group flex flex-col border-l-4 border-teal-600 dark:border-teal-500 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
+          <span class="text-sm font-medium text-teal-600 dark:text-teal-300">
             <%= gettext("Schritt") %> 1
           </span>
-          <span class="text-sm font-medium dark:text-gray-300">Registrierung</span>
-        </a>
+          <span class="text-sm font-medium text-gray-800 dark:text-gray-600">Registrierung</span>
+        </div>
       </li>
       <li class="md:flex-1">
-        <!-- Current Step -->
-        <a
-          href="#"
-          class=" disabled flex flex-col border-l-4 border-indigo-600 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4"
-          aria-current="step"
-        >
-          <span class="text-sm font-medium text-indigo-600"><%= gettext("Schritt") %> 2</span>
+        <div class="flex flex-col border-l-4 border-indigo-600 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
+          <span class="text-sm font-medium text-indigo-600 dark:text-indigo-300">
+            <%= gettext("Schritt") %> 2
+          </span>
           <span class="text-sm font-medium dark:text-gray-300">Validieren des Benutzers</span>
-        </a>
+        </div>
       </li>
       <li class="md:flex-1">
-        <!-- Upcoming Step -->
         <a class="group flex flex-col border-l-4 border-gray-200 py-2 pl-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
           <span class="text-sm font-medium text-gray-500"><%= gettext("Schritt") %> 3</span>
-          <span class="text-sm font-medium">Aktivieren der Firma</span>
+          <span class="text-sm font-medium dark:text-gray-300">Aktivieren der Firma</span>
         </a>
       </li>
     </ol>
   </nav>
 
-  <div class="mx-auto max-w-7xl lg:px-8 mt-16">
-    <div class="flex gap-12">
-      <div class="flex-1 text-white">
-        <p>Erklärung + Screenshot</p>
-        <ol>
-          <li>1. Erklärung Synchronisierung</li>
-          <li>2. Ablauf Schritt 1: Registrierender Benutzer (Empfehlung: separater Benutzer)</li>
-          <li>3. Kontrolle der Berechtigungen, Prüfung ob Firma bereits vorhanden ist</li>
-          <li>5. Anzeige des Datenschutzes, Folgen der Registrierung</li>
-          <li>4. Anlegen der Scheduler, Start der Synchronisierung</li>
-          <li>
-            5. Benutzer mit "Admin"-Berechtigung + registrierender Benutzer sehen Admin-Board für "Deregistrierung"
-          </li>
-        </ol>
+  <div class="mx-auto max-w-7xl lg:px-8 mt-16 dark:text-white">
+    <p>Validierung</p>
+    <dl class="divide-y divide-gray-100 dark:divide-white/10">
+      <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+      <dt class="text-sm font-medium leading-6 text-gray-900 dark:text-white">
+        Kontrolle Benutzerberechtigung
+      </dt>
+      <dd :if={@valid? == []} class="mt-1 text-sm leading-6 text-gray-700 dark:text-gray-400 sm:col-span-2 sm:mt-0">
+        <.icon name="hero-check"/>
+      </dd>
+      <dd :if={@valid? != []} class="mt-1 text-sm leading-6 text-gray-700 dark:text-gray-400 sm:col-span-2 sm:mt-0">
+        Nein
+        <ul>
+          <li :for={p <- @valid}><%= p %></li>
+        </ul>
+      </dd>
       </div>
-      <div class="flex-1">
-        <div class="dark:text-white">
-          <.link navigate={
-            ~p"/auth/bexio?scope=article_show%20contact_show%20email%20kb_invoice_show%20kb_offer_show%20kb_order_show%20note_show%20offline_access%20openid%20profile"
-          }>
-            Registrieren mit Bexio
-          </.link>
-        </div>
+      <div class="px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+      <dt class="text-sm font-medium leading-6 text-gray-900 dark:text-white">Kontrolle der Firma</dt>
+      <dd :if={@company_exists?} class="mt-1 text-sm leading-6 text-gray-700 dark:text-gray-400 sm:col-span-2 sm:mt-0">
+        Die Firma existiert bereits. Soll der Benutzer für die Synchronisierung der Daten ersetzt werden?
+      </dd>
+      <dd :if={not @company_exists?} class="mt-1 text-sm leading-6 text-gray-700 dark:text-gray-400 sm:col-span-2 sm:mt-0">
+        Die Firma ist neu und wird hiermit registriert. Wenn Sie den Prozess fortsetzen, bestätigen Sie, dass Sie den Ablauf verstanden
+        und mit den <a href="#" target="_blank">Datenschutzbestimmungen</a>
+        einverstanden sind.<br />
+      </dd>
       </div>
-    </div>
+    </dl>
+    <p>
+      Bei Bestätigung geschieht folgendes:
+
+      <.list>
+        <:item title="wird die Firma angelegt">neues Schema in der Datenbank, Schutz gegen Angriffe und Programmierfehler</:item>
+        <:item title="werden die globalen Daten geldaen">Kontaktgruppen, Titel, Sektoren, Bezahltypen, Kontoliste, Währungen, Sprachen, Länder, Artikeleinheiten, Lagerorte</:item>
+        <:item title="starten der Scheduler">Synchronisierung von Kontakten, Adressen, Offerten, Aufträgen, Rechnungen und Artikeln</:item>
+      </.list>
+    </p>
+
+          <.link
+        navigate={
+          ~p"/register/step3"
+        }
+        class="inline-flex items-center gap-x-2 rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+      >
+        &raquo; Tönt super, los geht's
+      </.link>
+
+    <div><a href={~p"/register/step3"}>Tönt super, los geht's</a></div>
   </div>
 
-  <div class="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8 lg:py-40">
-    <div class="mx-auto max-w-4xl divide-y divide-gray-900/10 dark:divide-white/10">
-      <h2 class="text-2xl font-bold leading-10 tracking-tight text-gray-900 dark:text-white">
-        <%= gettext("Häufig gestellte Fragen") %>
-      </h2>
-      <dl class="mt-10 space-y-6 divide-y divide-gray-900/10 dark:divide-white/10">
-        <div class="pt-6">
-          <dt>
-            <!-- Expand/collapse question button -->
-            <button
-              type="button"
-              class="flex w-full items-start justify-between text-left text-gray-900 dark:text-white"
-              aria-controls="faq-0"
-              aria-expanded="false"
-            >
-              <span class="text-base font-semibold leading-7">
-                <%= gettext("Kann ich meine Daten wieder löschen lassen?") %>
-              </span>
-              <span class="ml-6 flex h-7 items-center">
-                <!--
-                  Icon when question is collapsed.
-
-                  Item expanded: "hidden", Item collapsed: ""
-                -->
-                <svg
-                  class="hidden h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
-                </svg>
-                <!--
-                  Icon when question is expanded.
-
-                  Item expanded: "", Item collapsed: "hidden"
-                -->
-                <svg
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M18 12H6" />
-                </svg>
-              </span>
-            </button>
-          </dt>
-          <dd class="mt-2 pr-12" id="faq-0">
-            <p class="text-base leading-7 text-gray-600 dark:text-gray-300">
-              <%= gettext(
-                "Wenn man seinen Account schliesst, werden sämtliche gespeicherte Daten gelöscht und müssen bei einer erneuten Anmeldung auch wieder komplett synchronisiert werden."
-              ) %>
-            </p>
-          </dd>
-        </div>
-      </dl>
-    </div>
-  </div>
+  <.faq />
 </div>
