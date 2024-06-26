@@ -17,8 +17,11 @@ defmodule Contact360.Release do
   defp migrate_tenant_schemas(repo) do
     path = Application.app_dir(@app, "priv/repo/tenant_migrations")
 
-    Triplex.all()
-    |> Enum.each(&Ecto.Migrator.run(repo, path, :up, all: true, prefix: &1.prefix))
+    Ecto.Migrator.with_repo(repo, fn repo ->
+      Triplex.all(repo)
+      |> Enum.map(&Ecto.Migrator.run(repo, path, :up, all: true, prefix: &1.prefix))
+      |> IO.inspect(label: "Migrate tenant schemas for #{inspect(repo)}")
+    end)
     |> IO.inspect(label: "Migrate tenant schemas")
   end
 
@@ -26,12 +29,13 @@ defmodule Contact360.Release do
     load_app()
     {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :down, to: version))
     # TODO what is the result??
-    Triplex.all()
-    |> Ecto.Migrator.with_repo(
+    Ecto.Migrator.with_repo(
       repo,
-      &Ecto.Migrator.run(&1, :down, to: version, prefix: &1.prefix)
+      fn r ->
+        Triplex.all(r) |> Enum.map(&Ecto.Migrator.run(r, :down, to: version, prefix: &1.prefix))
+      end
     )
-    |> IO.inspect(label: "Rollback tenant schemas")
+    |> IO.inspect(label: "Rollback tenant schemas for #{inspect(repo)}")
   end
 
   defp repos do
