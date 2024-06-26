@@ -39,6 +39,15 @@ defmodule Contact360.Clients do
     |> hd()
   end
 
+  def list_clients do
+    query =
+      from c in Client,
+        order_by: [asc: :company_name, asc: :erp_id],
+        select: c
+
+    Repo.all(query)
+  end
+
   @doc """
   Gets a single client for a given erp and company id.
 
@@ -67,57 +76,85 @@ defmodule Contact360.Clients do
 
   """
   def register_bexio_client(user) do
-    dbg()
+    if registering_user_valid(user) == :valid do
+      existing_client = Repo.get_by(Client, cloud_erp: :bexio, erp_id: user.company_id)
 
-    registering_user_valid?(user)
+      {:ok, [company]} =
+        user.token |> BexioApiClient.new() |> BexioApiClient.Others.fetch_company_profiles()
 
-    client =
-      Client.changeset(%Client{}, %{
-        cloud_erp: :bexio,
-        erp_id: user.company_id,
-        active: true,
-        registration_user_id: user.login_id,
-        company_name: "not yet defined",
-        registration_email: user.email,
-        scopes: [],
-        features: ["clients", "items"]
-      })
+      client =
+        Client.changeset(existing_client || %Client{}, %{
+          cloud_erp: :bexio,
+          erp_id: user.company_id,
+          billing_email: company.mail,
+          billing_address:
+            company.name <>
+              "\n" <>
+              company.address <>
+              "\n" <> company.address_nr <> "\n" <> company.postcode <> " " <> company.city,
+          active: true,
+          registration_user_id: user.login_id,
+          company_name: company.name,
+          registration_email: user.email,
+          scopes: user.scopes,
+          features: ["clients", "items"],
+          action: "register"
+        })
 
-    if client.valid? do
-      Triplex.create_schema(tenant_name(client.data), Repo, fn tenant, repo ->
-        Triplex.migrate(tenant, repo) |> IO.inspect(label: "Migration")
-        repo.insert(client)
-      end)
+      if client.valid? do
+        triplex_id = tenant_name(:bexio, user.company_id)
+
+        if Triplex.exists?(triplex_id) do
+          upsert(existing_client, client)
+        else
+          with {:ok, _} <- Triplex.create(triplex_id) do
+            upsert(existing_client, client)
+          end
+        end
+      else
+        {:error, client}
+      end
     else
-      {:error, client}
+      {:error, "User not valid for registration!"}
     end
   end
 
-  defp registering_user_valid?(nil), do: false
+  defp upsert(nil, client), do: Repo.insert(client)
+  defp upsert(_, client), do: Repo.update(client)
 
-  defp registering_user_valid?(%{refresh_token: refresh_token, token: token, scopes: scopes}) do
-    refresh_token != nil and enough_scopes?(scopes, @needed_scopes) and enough_permissions?(token)
+  def registering_user_valid(nil), do: :no_user
+
+  def registering_user_valid(%{refresh_token: refresh_token, token: token, scopes: scopes}) do
+    cond do
+      refresh_token == nil -> :no_offline_access
+      not enough_scopes?(scopes, @needed_scopes) -> :needs_more_scopes
+      not enough_permissions?(token) -> :needs_more_permissions
+      true -> :valid
+    end
   end
 
   defp enough_scopes?(scopes, needed),
     do: Enum.all?(needed, fn needed_scope -> Enum.member?(scopes, needed_scope) end)
 
   defp enough_permissions?(token) do
-    {:ok, permissions} = BexioApiClient.Others.get_access_information(token)
-    dbg()
-    # can_view_all?(permissions.kb_article_order) and
+    {:ok, access_information} =
+      token
+      |> BexioApiClient.new()
+      |> BexioApiClient.Others.get_access_information()
+
+    permissions = access_information.permissions
+
     can_view_all?(permissions.article) and
       can_view_all?(permissions.contact) and
       can_view_all?(permissions.kb_offer) and
       can_view_all?(permissions.kb_order) and
-      can_view_all?(permissions.kb_invoice) and
-      can_view_all?(permissions.stockmanagement)
+      can_view_all?(permissions.kb_invoice)
   end
 
-  defp can_view_all?(%{view: :all}), do: true
+  defp can_view_all?(%{show: :all}), do: true
   defp can_view_all?(_), do: false
 
-  defp tenant_name(%{erp_id: erp_id, cloud_erp: cloud_erp}),
+  defp tenant_name(cloud_erp, erp_id),
     do: "#{cloud_erp}_#{erp_id}"
 
   @doc """
@@ -159,7 +196,7 @@ defmodule Contact360.Clients do
       {:error, "Client has still active months!"}
     else
       Repo.delete(client)
-      Triplex.drop(tenant_name(client))
+      Triplex.drop(tenant_name(client.cloud_erp, client.erp_id))
     end
   end
 

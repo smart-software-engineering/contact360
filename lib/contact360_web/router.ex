@@ -25,6 +25,7 @@ defmodule Contact360Web.Router do
     get "/", WelcomeController, :home
     get "/register/step1", RegistrationController, :step1
     get "/register/step2", RegistrationController, :step2
+    get "/register/step3", RegistrationController, :step3
   end
 
   # Other scopes may use custom stacks.

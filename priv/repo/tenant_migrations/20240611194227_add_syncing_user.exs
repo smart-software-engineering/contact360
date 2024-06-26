@@ -10,10 +10,8 @@ defmodule Contact360.Repo.Migrations.AddSyncingUser do
     end
 
     alter table(:users) do
-      drop :refresh_token
-      drop :syncing
-
-      timestamps()
+      remove :refresh_token
+      remove :syncing
     end
 
   end

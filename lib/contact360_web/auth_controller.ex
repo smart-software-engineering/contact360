@@ -29,7 +29,7 @@ defmodule Contact360Web.AuthController do
     company = Contact360.Clients.get_client_by_erp_and_erp_id(:bexio, user.company_id)
 
     cond do
-      company == nil and Enum.member?(user.scopes, "offline_access") ->
+      Enum.member?(user.scopes, "offline_access") ->
         Logger.info(
           "Benutzer hat sich angemeldet mit offline-access für die Registrierung der Firma"
         )
