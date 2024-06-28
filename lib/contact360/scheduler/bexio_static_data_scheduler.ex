@@ -1,6 +1,6 @@
-# This is a PoC Genclient_id,  in reality I need to separate the API calls and the GenServer State
+# TODO rewrite this into a supervisor and every scheduler into a genserver...
 defmodule Contact360.Scheduler.BexioStaticDataScheduler do
-  use GenServer
+  use GenServer, restart: :transient
 
   require Logger
 
@@ -21,6 +21,10 @@ defmodule Contact360.Scheduler.BexioStaticDataScheduler do
     else
       GenServer.start_link(__MODULE__, Keyword.put(opts, :name, process_name(company_id)))
     end
+  end
+
+  def stop_process(client_id) do
+    GenServer.call(process_name(client_id), :stop)
   end
 
   def contact_groups(client_id), do: GenServer.call(process_name(client_id), :contact_groups)
@@ -211,6 +215,11 @@ defmodule Contact360.Scheduler.BexioStaticDataScheduler do
   end
 
   @impl GenServer
+  def handle_cast(:stop, state) do
+    {:stop, :normal, state}
+  end
+
+  @impl GenServer
   def handle_call(name, _from, state) when is_atom(name) do
     {:reply, Map.fetch(state, name), state}
   end
@@ -228,7 +237,8 @@ defmodule Contact360.Scheduler.BexioStaticDataScheduler do
     Process.send_after(self(), {:fetch_data, name}, time)
   end
 
-  def process_name(company_id), do: {:via, Registry, "bexio_static_data_scheduler_#{company_id}"}
+  def process_name(company_id),
+    do: {:via, Registry, {Contact360.Registry, "bexio_static_data_scheduler_#{company_id}"}}
 
   defp bexio_client_id, do: Application.fetch_env!(:contact360, __MODULE__)[:bexio_client_id]
 
