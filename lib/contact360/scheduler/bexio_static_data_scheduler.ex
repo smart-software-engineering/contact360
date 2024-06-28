@@ -1,34 +1,25 @@
 # This is a PoC Genclient_id,  in reality I need to separate the API calls and the GenServer State
-defmodule Contact360.DataRetrieval.BexioStaticDataScheduler do
+defmodule Contact360.Scheduler.BexioStaticDataScheduler do
   use GenServer
 
   require Logger
 
-  alias Contact360.DataRetrieval.BexioStaticDataFetcher
+  alias Contact360.Scheduler.BexioStaticDataFetcher
 
   @update_timer 1000 * 60 * 15
 
   ## Client API
   @doc """
-  Starts a scheduler for the given client id with unique name.
-  """
-  def start_scheduler(client_id, token) do
-    DynamicSupervisor.start_child(
-      Contact360.BexioStaticDataSupervisor,
-      {__MODULE__, client_id: client_id, token: token}
-    )
-  end
-
-  @doc """
   Starts the basic data scheduler.
   """
   def start_link(opts \\ []) do
-    client_id = Keyword.get(opts, :client_id)
+    company_id = Keyword.get(opts, :company_id)
+    refresh_token = Keyword.get(opts, :refresh_token)
 
-    if client_id == nil do
-      {:error, "client_id is required"}
+    if company_id == nil or refresh_token == nil do
+      {:error, "company_id and refresh_token are required is required"}
     else
-      GenServer.start_link(__MODULE__, Keyword.put(opts, :name, process_name(client_id)))
+      GenServer.start_link(__MODULE__, Keyword.put(opts, :name, process_name(company_id)))
     end
   end
 
@@ -237,7 +228,7 @@ defmodule Contact360.DataRetrieval.BexioStaticDataScheduler do
     Process.send_after(self(), {:fetch_data, name}, time)
   end
 
-  defp process_name(client_id), do: {:global, "bexio_static_data_scheduler_#{client_id}"}
+  def process_name(company_id), do: {:via, Registry, "bexio_static_data_scheduler_#{company_id}"}
 
   defp bexio_client_id, do: Application.fetch_env!(:contact360, __MODULE__)[:bexio_client_id]
 

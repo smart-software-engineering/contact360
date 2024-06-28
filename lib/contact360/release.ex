@@ -19,7 +19,7 @@ defmodule Contact360.Release do
 
     Ecto.Migrator.with_repo(repo, fn repo ->
       Triplex.all(repo)
-      |> Enum.map(&Ecto.Migrator.run(repo, path, :up, all: true, prefix: &1.prefix))
+      |> Enum.map(&Ecto.Migrator.run(repo, path, :up, all: true, prefix: &1))
       |> IO.inspect(label: "Migrate tenant schemas for #{inspect(repo)}")
     end)
     |> IO.inspect(label: "Migrate tenant schemas")

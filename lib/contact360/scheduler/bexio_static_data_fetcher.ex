@@ -1,4 +1,4 @@
-defmodule Contact360.DataRetrieval.BexioStaticDataFetcher do
+defmodule Contact360.Scheduler.BexioStaticDataFetcher do
   @moduledoc """
   This module is responsible for fetching static data from the Bexio API.
   """
