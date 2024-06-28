@@ -16,7 +16,7 @@ kill_signal = 'SIGTERM'
   PHX_HOST = 'contact360.fly.dev'
   PORT = '8080'
   DNS_CLUSTER_QUERY = "contact360.internal"
-
+  RELEASE_COOKIE = "okanI4UA5qC-MzksFjwl3npjACc8lA7Lvbn02L8ZMJIXnxpjaEviiA=="
 
 [http_service]
   internal_port = 8080

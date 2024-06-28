@@ -16,7 +16,7 @@ defmodule Contact360.Application do
       {Finch, name: Contact360.Finch},
       # Start a worker by calling: Contact360.Worker.start_link(arg)
       # {Contact360.Worker, arg},
-      {Contact360.Scheduler.BexioBasicDataSupervisor, name: Contact360.Scheduler.BexioBasicDataSupervisor},
+      {Contact360.Scheduler.BexioStaticDataSupervisor, name: Contact360.Scheduler.BexioStaticDataSupervisor},
       # Start to serve requests, typically the last entry
       Contact360Web.Endpoint
     ]
