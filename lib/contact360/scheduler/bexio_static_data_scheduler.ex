@@ -17,27 +17,25 @@ defmodule Contact360.Scheduler.BexioStaticDataScheduler do
     refresh_token = Keyword.get(opts, :refresh_token)
 
     if company_id == nil or refresh_token == nil do
-      {:error, "company_id and refresh_token are required is required"}
+      {:error, "company_id and refresh_token are required"}
     else
       GenServer.start_link(__MODULE__, Keyword.put(opts, :name, process_name(company_id)))
     end
   end
 
-  def stop_process(client_id) do
-    GenServer.call(process_name(client_id), :stop)
+  def stop_process(company_id) do
+    GenServer.call(process_name(company_id), :stop)
   end
 
-  def contact_groups(client_id), do: GenServer.call(process_name(client_id), :contact_groups)
-  def contact_sectors(client_id), do: GenServer.call(process_name(client_id), :contact_sectors)
-  def salutations(client_id), do: GenServer.call(process_name(client_id), :salutations)
-  def payment_types(client_id), do: GenServer.call(process_name(client_id), :payment_types)
-  def accounts(client_id), do: GenServer.call(process_name(client_id), :accounts)
-  def currencies(client_id), do: GenServer.call(process_name(client_id), :currencies)
-  def languages(client_id), do: GenServer.call(process_name(client_id), :languages)
-  def countries(client_id), do: GenServer.call(process_name(client_id), :countries)
-  def units(client_id), do: GenServer.call(process_name(client_id), :units)
-  def stock_areas(client_id), do: GenServer.call(process_name(client_id), :stock_areas)
-  def stock_locations(client_id), do: GenServer.call(process_name(client_id), :stock_locations)
+  def contact_groups(company_id), do: GenServer.call(process_name(company_id), :contact_groups)
+  def contact_sectors(company_id), do: GenServer.call(process_name(company_id), :contact_sectors)
+  def salutations(company_id), do: GenServer.call(process_name(company_id), :salutations)
+  def payment_types(company_id), do: GenServer.call(process_name(company_id), :payment_types)
+  def accounts(company_id), do: GenServer.call(process_name(company_id), :accounts)
+  def currencies(company_id), do: GenServer.call(process_name(company_id), :currencies)
+  def languages(company_id), do: GenServer.call(process_name(company_id), :languages)
+  def countries(company_id), do: GenServer.call(process_name(company_id), :countries)
+  def units(company_id), do: GenServer.call(process_name(company_id), :units)
 
   ## Server API
   @impl GenServer
@@ -61,8 +59,6 @@ defmodule Contact360.Scheduler.BexioStaticDataScheduler do
 
       if not without_items do
         trigger_self(:units, 1)
-        trigger_self(:stock_areas, 1)
-        trigger_self(:stock_locations, 1)
       end
 
       {:ok,
@@ -78,8 +74,6 @@ defmodule Contact360.Scheduler.BexioStaticDataScheduler do
          languages: %{},
          countries: %{},
          units: %{},
-         stock_areas: %{},
-         stock_locations: %{},
          titles: %{}
        }}
     end
@@ -175,30 +169,12 @@ defmodule Contact360.Scheduler.BexioStaticDataScheduler do
         state
       )
 
-  @impl GenServer
-  def handle_info({:fetch_data, :stock_areas}, state),
-    do:
-      retrieve_data_from_server_and_restart_process(
-        :stock_areas,
-        &BexioStaticDataFetcher.fetch_stock_areas/1,
-        state
-      )
-
-  @impl GenServer
-  def handle_info({:fetch_data, :stock_locations}, state),
-    do:
-      retrieve_data_from_server_and_restart_process(
-        :stock_locations,
-        &BexioStaticDataFetcher.fetch_stock_locations/1,
-        state
-      )
-
   defp retrieve_data_from_server_and_restart_process(
          name,
          fetcher,
-         %{client: client, client_id: client_id} = state
+         %{client: client, company_id: company_id} = state
        ) do
-    Logger.debug("Retrieving #{name} from Bexio for client with id #{client_id}.")
+    Logger.debug("Retrieving #{name} from Bexio for client with id #{company_id}.")
     trigger_self(name)
 
     case fetcher.(client) do
@@ -207,7 +183,7 @@ defmodule Contact360.Scheduler.BexioStaticDataScheduler do
 
       {:error, _} ->
         Logger.error(
-          "Failed to retrieve #{name} from Bexio for client with id #{client_id}, retrying next time."
+          "Failed to retrieve #{name} from Bexio for client with id #{company_id}, retrying next time."
         )
 
         {:noreply, state}

@@ -91,8 +91,4 @@ defmodule Contact360.Scheduler.BexioStaticDataFetcher do
   end
 
   def fetch_units(client, api \\ BexioApiClient.Others), do: api.fetch_units(client)
-  def fetch_stock_areas(client, api \\ BexioApiClient.Items), do: api.fetch_stock_areas(client)
-
-  def fetch_stock_locations(client, api \\ BexioApiClient.Items),
-    do: api.fetch_stock_locations(client)
 end

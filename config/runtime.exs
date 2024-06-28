@@ -21,7 +21,7 @@ if System.get_env("PHX_SERVER") do
 end
 
 if config_env() != :test do
-  config :contact360, Contact360.DataRetrieval.BexioStaticDataScheduler,
+  config :contact360, Contact360.Scheduler.BexioStaticDataScheduler,
     bexio_client_id: System.get_env("BEXIO_CLIENT_ID") || raise("Needs BEXIO_CLIENT_ID"),
     bexio_client_secret:
       System.get_env("BEXIO_CLIENT_SECRET") || raise("Needs BEXIO_CLIENT_SECRET")
