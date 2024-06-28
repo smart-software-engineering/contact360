@@ -1,6 +1,7 @@
 defmodule Contact360Web.RegistrationController do
   use Contact360Web, :controller
 
+  alias Contact360Web.CoreComponents
   alias Contact360.Clients
 
   def step1(conn, _params) do
@@ -39,11 +40,16 @@ defmodule Contact360Web.RegistrationController do
       {:ok, client} ->
         conn
         # |> configure_session(drop: true)
-        |> render(:step3, layout: false, client: client, error: nil)
+        |> render(:step3, layout: false, client: client, errors: nil)
 
-      {:error, error} ->
+      {:error, %Ecto.Changeset{} = changeset} ->
         conn
-        |> render(:step3, layout: false, client: nil, error: error)
+        |> render(:step3,
+          layout: false,
+          client: nil,
+          errors:
+            Enum.map(changeset.errors, fn {k, v} -> {k, CoreComponents.translate_error(v)} end)
+        )
     end
   end
 
@@ -52,8 +58,12 @@ defmodule Contact360Web.RegistrationController do
       :valid ->
         []
 
-      :no_user ->
-        [gettext("Es wurde kein Benutzer ausgewählt!")]
+      :not_valid ->
+        [
+          gettext(
+            "Es wurde kein Benutzer ausgewählt oder der Benutzer konnte nicht ermittelt werden!"
+          )
+        ]
 
       :no_offline_access ->
         [gettext("Dem Benutzer wurde kein Offline-Access gewährt!")]

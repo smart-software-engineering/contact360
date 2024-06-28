@@ -2,9 +2,10 @@ defmodule Contact360.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
-alias Contact360.Scheduler
-
   use Application
+
+  alias Contact360.Scheduler
+  alias Contact360.Scheduler.BexioStaticDataSupervisor
 
   @impl true
   def start(_type, _args) do
@@ -30,9 +31,7 @@ alias Contact360.Scheduler
     Supervisor.start_link(children, opts)
   end
 
-  defp start_bexio_supervisor do
-    alias Contact360.Scheduler.BexioStaticDataSupervisor
-
+  def start_bexio_supervisor do
     children = [
       {BexioStaticDataSupervisor, name: BexioStaticDataSupervisor},
       Supervisor.child_spec({Task, &Scheduler.start_all_schedulers/0},

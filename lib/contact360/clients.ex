@@ -97,12 +97,12 @@ defmodule Contact360.Clients do
               company.address <>
               "\n" <> company.address_nr <> "\n" <> company.postcode <> " " <> company.city,
           active: true,
-          registration_user_id: user.login_id,
           company_name: company.name,
+          registration_user_id: user.login_id,
           registration_email: user.email,
+          refresh_token: user.refresh_token,
           scopes: user.scopes,
-          features: ["clients", "items"],
-          action: "register"
+          features: ["clients", "items"]
         })
 
       if client.valid? do
@@ -127,8 +127,7 @@ defmodule Contact360.Clients do
   defp upsert(_, client), do: Repo.update(client)
 
   @spec registering_user_valid(map) ::
-          :no_user | :no_offline_access | :needs_more_scopes | :needs_more_permissions | :valid
-  def registering_user_valid(nil), do: :no_user
+          :not_valid | :no_offline_access | :needs_more_scopes | :needs_more_permissions | :valid
 
   def registering_user_valid(%{refresh_token: refresh_token, token: token, scopes: scopes}) do
     cond do
@@ -138,6 +137,8 @@ defmodule Contact360.Clients do
       true -> :valid
     end
   end
+
+  def registering_user_valid(_), do: :not_valid
 
   defp enough_scopes?(scopes, needed),
     do: Enum.all?(needed, fn needed_scope -> Enum.member?(scopes, needed_scope) end)

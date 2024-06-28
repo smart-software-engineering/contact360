@@ -2,6 +2,8 @@ defmodule Contact360.Clients.Client do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @email_regex ~r/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
+
   schema "clients" do
     field :active, :boolean, default: true
     field :erp_id, :string
@@ -13,6 +15,7 @@ defmodule Contact360.Clients.Client do
     field :billing_address, :string
     field :scopes, {:array, :string}
     field :features, {:array, :string}
+    field :refresh_token, :string
 
     has_many :months, Contact360.Clients.Month
     has_many :schedulers, Contact360.Clients.Scheduler
@@ -33,7 +36,8 @@ defmodule Contact360.Clients.Client do
       :registration_user_id,
       :cloud_erp,
       :scopes,
-      :features
+      :features,
+      :refresh_token
     ])
     |> validate_required([
       :erp_id,
@@ -46,7 +50,19 @@ defmodule Contact360.Clients.Client do
       :features
     ])
     |> unique_constraint([:cloud_erp, :erp_id])
+    |> validate_refresh_token()
+    |> validate_format(:registration_email, @email_regex)
 
     # TODO: validate email
+  end
+
+  defp validate_refresh_token(%Ecto.Changeset{} = changeset) do
+    active? = get_field(changeset, :active, true)
+
+    if active? and get_field(changeset, :refresh_token) == nil do
+      add_error(changeset, :refresh_token, "is required")
+    else
+      changeset
+    end
   end
 end
