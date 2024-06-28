@@ -39,9 +39,9 @@
   </nav>
 
   <div :if={@errors} class="mx-auto max-w-7xl lg:px-8 mt-16 dark:text-white">
-    <p>Es sind Fehler aufgetreten. Bitte versuchen Sie es erneut: </p>
+    <p>Es sind Fehler aufgetreten. Bitte versuchen Sie es erneut:</p>
     <ul class="list-disc text-red-900 dark:text-red-300 my-6 ml-6">
-    <li :for={{name, text} <- @errors}><%= name %> <%= text %></li>
+      <li :for={{name, text} <- @errors}><%= name %> <%= text %></li>
     </ul>
     <p><.link navigate={~p"/register/step1"}>Zurück zum ersten Schritt</.link></p>
   </div>

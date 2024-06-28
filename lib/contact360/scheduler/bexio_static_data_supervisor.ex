@@ -15,10 +15,11 @@ defmodule Contact360.Scheduler.BexioStaticDataSupervisor do
     DynamicSupervisor.start_child(
       __MODULE__,
       BexioStaticDataScheduler.child_spec(company_id: company_id, refresh_token: refresh_token)
-    ) |> dbg()
+    )
+    |> dbg()
   end
 
-    @doc """
+  @doc """
   Stops a scheduler for the given client id.
   """
   def stop_scheduler(company_id) do
@@ -32,5 +33,4 @@ defmodule Contact360.Scheduler.BexioStaticDataSupervisor do
   def init(_init_arg) do
     DynamicSupervisor.init(strategy: :one_for_one)
   end
-
 end
