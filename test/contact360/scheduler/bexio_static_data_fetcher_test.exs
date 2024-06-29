@@ -1,7 +1,7 @@
-defmodule Contact360.DataRetrieval.BexioStaticDataFetcherTest do
+defmodule Contact360.Scheduler.BexioStaticDataFetcherTest do
   use ExUnit.Case, async: true
 
-  alias Contact360.DataRetrieval.BexioStaticDataFetcher
+  alias Contact360.Scheduler.BexioStaticDataFetcher
 
   defmodule ContactFake do
     def fetch_contact_groups(_client),

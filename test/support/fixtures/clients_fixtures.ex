@@ -1,5 +1,5 @@
 defmodule Contact360.ClientsFixtures do
-  alias Ecto.Repo
+  alias Contact360.Repo
 
   @moduledoc """
   This module defines test helpers for creating

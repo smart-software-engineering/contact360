@@ -54,7 +54,7 @@ defmodule Contact360Web.RegistrationController do
   end
 
   defp valid_user_for_registration?(user) do
-    case Clients.registering_user_valid(user) do
+    case Clients.registering_user_valid?(user) do
       :valid ->
         []
 

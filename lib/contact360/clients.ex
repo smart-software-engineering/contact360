@@ -77,59 +77,67 @@ defmodule Contact360.Clients do
 
       iex> register_client(%{field: bad_value})
       {:error, %Ecto.Changeset{}}
-
   """
   def register_bexio_client(user) do
-    if registering_user_valid(user) == :valid do
-      existing_client = Repo.get_by(Client, cloud_erp: :bexio, erp_id: user.company_id)
+    user
+    |> registering_user_valid?()
+    |> do_register_bexio_client(user)
+  end
 
-      {:ok, [company]} =
-        user.token |> BexioApiClient.new() |> BexioApiClient.Others.fetch_company_profiles()
+  defp do_register_bexio_client(:valid, user) do
+    existing_client = Repo.get_by(Client, cloud_erp: :bexio, erp_id: user.company_id)
 
-      client =
-        Client.changeset(existing_client || %Client{}, %{
-          cloud_erp: :bexio,
-          erp_id: user.company_id,
-          billing_email: company.mail,
-          billing_address:
-            company.name <>
-              "\n" <>
-              company.address <>
-              "\n" <> company.address_nr <> "\n" <> company.postcode <> " " <> company.city,
-          active: true,
-          company_name: company.name,
-          registration_user_id: user.login_id,
-          registration_email: user.email,
-          refresh_token: user.refresh_token,
-          scopes: user.scopes,
-          features: ["clients", "items"]
-        })
+    {:ok, [company]} =
+      user.token |> BexioApiClient.new() |> BexioApiClient.Others.fetch_company_profiles()
 
-      if client.valid? do
-        triplex_id = tenant_name(:bexio, user.company_id)
-
-        if Triplex.exists?(triplex_id) do
-          upsert(existing_client, client)
-        else
-          with {:ok, _} <- Triplex.create(triplex_id) do
-            upsert(existing_client, client)
-          end
-        end
-      else
-        {:error, client}
-      end
-    else
-      {:error, "User not valid for registration!"}
+    with {:ok, changeset} <- client_changeset(existing_client, user, company),
+         {:ok, _tenant} <- create_triplex_if_needed(:bexio, user.company_id),
+         {:ok, client} <- upsert_client(changeset, existing_client == nil) do
+      {:ok, client}
     end
   end
 
-  defp upsert(nil, client), do: Repo.insert(client)
-  defp upsert(_, client), do: Repo.update(client)
+  defp client_changeset(existing_client, user, company) do
+    client =
+      Client.changeset(existing_client || %Client{}, %{
+        cloud_erp: :bexio,
+        erp_id: user.company_id,
+        billing_email: company.mail,
+        billing_address:
+          company.name <>
+            "\n" <>
+            company.address <>
+            "\n" <> company.address_nr <> "\n" <> company.postcode <> " " <> company.city,
+        active: true,
+        company_name: company.name,
+        registration_user_id: user.login_id,
+        registration_email: user.email,
+        refresh_token: user.refresh_token,
+        scopes: user.scopes,
+        features: ["clients", "items"],
+        action: "registration"
+      })
 
-  @spec registering_user_valid(map) ::
+    if client.valid?, do: {:ok, client}, else: {:client_invalid, client.errors}
+  end
+
+  defp upsert_client(client, true), do: Repo.insert(client)
+  defp upsert_client(client, false), do: Repo.update(client)
+
+  defp create_triplex_if_needed(erp, id) do
+    triplex_id = tenant_name(erp, id)
+
+    if not Triplex.exists?(triplex_id) do
+      Triplex.create(triplex_id)
+    else
+      {:ok, triplex_id}
+    end
+  end
+
+  @spec registering_user_valid?(map) ::
           :not_valid | :no_offline_access | :needs_more_scopes | :needs_more_permissions | :valid
 
-  def registering_user_valid(%{refresh_token: refresh_token, token: token, scopes: scopes}) do
+  def registering_user_valid?(%{refresh_token: refresh_token, token: token, scopes: scopes}) do
     cond do
       refresh_token == nil -> :no_offline_access
       not enough_scopes?(scopes, @needed_scopes) -> :needs_more_scopes
@@ -138,7 +146,7 @@ defmodule Contact360.Clients do
     end
   end
 
-  def registering_user_valid(_), do: :not_valid
+  def registering_user_valid?(_), do: :not_valid
 
   defp enough_scopes?(scopes, needed),
     do: Enum.all?(needed, fn needed_scope -> Enum.member?(scopes, needed_scope) end)
