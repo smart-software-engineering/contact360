@@ -22,9 +22,10 @@ defmodule Contact360.ClientsFixtures do
         company_name: "some company_name",
         registration_email: "def@world.com",
         cloud_erp: "bexio",
+        refresh_token: "rft",
         scopes: [],
         features: ["contacts", "items"],
-        registration_user_id: 1
+        registration_user_id: "1"
       })
 
     changeset = Contact360.Clients.Client.changeset(%Contact360.Clients.Client{}, attrs)

@@ -57,10 +57,10 @@ defmodule Contact360.Clients do
 
   ## Examples
 
-      iex> get_client(:bexio, "123")
+      iex> get_client_by_erp_and_erp_id(:bexio, "123")
       %Client{}
 
-      iex> get_client(:bexio, "456")
+      iex> get_client_by_erp_and_erp_id(:bexio, "456")
       nil
 
   """
@@ -169,7 +169,7 @@ defmodule Contact360.Clients do
   defp can_view_all?(%{show: :all}), do: true
   defp can_view_all?(_), do: false
 
-  defp tenant_name(cloud_erp, erp_id),
+  def tenant_name(cloud_erp, erp_id),
     do: "#{cloud_erp}_#{erp_id}"
 
   @doc """
@@ -211,7 +211,9 @@ defmodule Contact360.Clients do
       {:error, "Client has still active months!"}
     else
       Repo.delete(client)
-      Triplex.drop(tenant_name(client.cloud_erp, client.erp_id))
+      triplex_id = tenant_name(client.cloud_erp, client.erp_id)
+      if Triplex.exists?(triplex_id), do: Triplex.drop(triplex_id)
+      {:ok, client}
     end
   end
 
