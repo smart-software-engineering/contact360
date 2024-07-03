@@ -35,3 +35,6 @@ contact360-*.tar
 npm-debug.log
 /assets/node_modules/
 
+# Just testing out the elixir tools...
+/.elixir-tools/
+.envrc

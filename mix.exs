@@ -58,13 +58,12 @@ defmodule Contact360.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.2"},
-      {:triplex, "~> 1.3"},
+      {:triplex, "~> 1.3.0"},
       {:req, "~> 0.4.14"},
       {:ueberauth, "~> 0.10.8"},
-      {:ueberauth_bexio, "~> 0.1.1"},
-      {:bexio_api_client, "~> 0.5.0"},
-      {:gen_stage, "~> 1.2"},
-      {:broadway, "~> 1.0"}
+      {:ueberauth_bexio, "~> 0.1.3"},
+      {:bexio_api_client, "~> 0.5.2"},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 

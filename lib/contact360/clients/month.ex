@@ -37,7 +37,7 @@ defmodule Contact360.Clients.Month do
   @doc false
   def update_changeset(month, attrs) do
     month
-    |> cast(attrs, [:active_users, :invoice_date, :payed_date, :bexio_ref, :unchargeable])
-    |> validate_required([:active_users, :unchargeable])
+    |> cast(attrs, [:invoice_date, :payed_date, :bexio_ref, :unchargeable])
+    |> validate_required([:unchargeable])
   end
 end

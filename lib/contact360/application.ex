@@ -2,7 +2,6 @@ defmodule Contact360.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
-
   use Application
 
   @impl true
@@ -11,11 +10,14 @@ defmodule Contact360.Application do
       Contact360Web.Telemetry,
       Contact360.Repo,
       {DNSCluster, query: Application.get_env(:contact360, :dns_cluster_query) || :ignore},
+      {Registry, keys: :unique, name: Contact360.Registry},
       {Phoenix.PubSub, name: Contact360.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: Contact360.Finch},
       # Start a worker by calling: Contact360.Worker.start_link(arg)
       # {Contact360.Worker, arg},
+      Contact360.Scheduler.BexioStaticDataStartup,
+      # TODO: start bexio supervisor below...
       # Start to serve requests, typically the last entry
       Contact360Web.Endpoint
     ]

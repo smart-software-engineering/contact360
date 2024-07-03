@@ -10,12 +10,32 @@ defmodule Contact360.Release do
 
     for repo <- repos() do
       {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :up, all: true))
+      migrate_tenant_schemas(repo)
     end
+  end
+
+  defp migrate_tenant_schemas(repo) do
+    path = Application.app_dir(@app, "priv/repo/tenant_migrations")
+
+    Ecto.Migrator.with_repo(repo, fn repo ->
+      Triplex.all(repo)
+      |> Enum.map(&Ecto.Migrator.run(repo, path, :up, all: true, prefix: &1))
+      |> IO.inspect(label: "Migrate tenant schemas for #{inspect(repo)}")
+    end)
+    |> IO.inspect(label: "Migrate tenant schemas")
   end
 
   def rollback(repo, version) do
     load_app()
     {:ok, _, _} = Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :down, to: version))
+    # TODO what is the result??
+    Ecto.Migrator.with_repo(
+      repo,
+      fn r ->
+        Triplex.all(r) |> Enum.map(&Ecto.Migrator.run(r, :down, to: version, prefix: &1.prefix))
+      end
+    )
+    |> IO.inspect(label: "Rollback tenant schemas for #{inspect(repo)}")
   end
 
   defp repos do
