@@ -1,5 +1,9 @@
 # This is a PoC Genclient_id,  in reality I need to separate the API calls and the GenServer State
 defmodule Contact360.Scheduler.BexioStaticDataSupervisor do
+  @moduledoc """
+  Supervisor for the BexioStaticDataScheduler. Once working correctly with Oban, this will be removed.
+  """
+
   use DynamicSupervisor
 
   alias Contact360.Scheduler.BexioStaticDataScheduler
@@ -16,7 +20,6 @@ defmodule Contact360.Scheduler.BexioStaticDataSupervisor do
       __MODULE__,
       BexioStaticDataScheduler.child_spec(company_id: company_id, refresh_token: refresh_token)
     )
-    |> dbg()
   end
 
   @doc """

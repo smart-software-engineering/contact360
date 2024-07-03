@@ -1,10 +1,18 @@
 # TODO rewrite this into a supervisor and every scheduler into a genserver...
 defmodule Contact360.Scheduler.BexioStaticDataScheduler do
+  @moduledoc """
+  This module defines all functionality that is needed to load static data from bexio per client. While currently self-triggering
+  with schedulers this part will be replaced by Oban.
+
+  TODO: Replace scheduler with Oban.
+  TODO: Should trigger an event to update the data in the database.
+  """
+
   use GenServer, restart: :transient
 
-  require Logger
-
   alias Contact360.Scheduler.BexioStaticDataFetcher
+
+  require Logger
 
   @update_timer 1000 * 60 * 15
 
@@ -202,10 +210,9 @@ defmodule Contact360.Scheduler.BexioStaticDataScheduler do
 
   @impl GenServer
   def handle_call({name, id}, _from, state) when is_atom(name) do
-    with {:ok, map} <- Map.fetch(state, name) do
-      {:reply, Map.fetch(map, id), state}
-    else
-      _ -> {:reply, :error, state}
+    case Map.fetch(state, name) do
+      {:ok, map} -> {:reply, Map.fetch(map, id), state}
+      :error -> {:reply, :error, state}
     end
   end
 

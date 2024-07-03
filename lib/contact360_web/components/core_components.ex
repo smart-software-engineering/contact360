@@ -16,8 +16,9 @@ defmodule Contact360Web.CoreComponents do
   """
   use Phoenix.Component
 
-  alias Phoenix.LiveView.JS
   import Contact360Web.Gettext
+
+  alias Phoenix.LiveView.JS
 
   @doc """
   Renders a modal.

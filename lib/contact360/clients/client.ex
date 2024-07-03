@@ -1,4 +1,7 @@
 defmodule Contact360.Clients.Client do
+  @moduledoc """
+  Client schema
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

@@ -1,8 +1,7 @@
-defmodule Contact360Web.PageControllerTest do
-  use Contact360Web.ConnCase
+defmodule Contact360Web.RegistrationControllerTest do
+  use Contact360Web.ConnCase, async: true
 
   # TODO rewrite this tests completely
-
   @tag :skip
   test "GET /", %{conn: _conn} do
     # conn = get(conn, ~p"/")

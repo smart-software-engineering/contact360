@@ -3,12 +3,12 @@ defmodule Contact360.Scheduler do
   The Scheduler context.
   """
 
-  alias Contact360.Scheduler.BexioStaticDataSupervisor
   alias Contact360.Clients
+  alias Contact360.Scheduler.BexioStaticDataSupervisor
 
   def start_all_schedulers do
-    Clients.list_active_clients()
-    |> Enum.each(&start_static_data_scheduler/1)
+    active_clients = Clients.list_active_clients()
+    Enum.each(active_clients, &start_static_data_scheduler/1)
   end
 
   def start_static_data_scheduler(%{erp_id: erp_id, refresh_token: refresh_token}) do

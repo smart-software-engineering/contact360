@@ -1,4 +1,8 @@
 defmodule Contact360.Scheduler.BexioStaticDataStartup do
+  @moduledoc """
+  Temporary solution for the startup of the BexioStaticDataSupervisor. Will be replaced by a oban job that runs on all nodes.
+  """
+
   use Supervisor
 
   alias Contact360.Scheduler

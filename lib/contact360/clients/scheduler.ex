@@ -1,4 +1,8 @@
 defmodule Contact360.Clients.Scheduler do
+  @moduledoc """
+  The scheduler per client schema. Probably will be replaced by Oban.
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 

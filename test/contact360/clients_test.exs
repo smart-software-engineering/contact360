@@ -1,5 +1,5 @@
 defmodule Contact360.ClientsTest do
-  use Contact360.DataCase
+  use Contact360.DataCase, async: true
 
   alias Contact360.Clients
 
@@ -98,7 +98,11 @@ defmodule Contact360.ClientsTest do
     test "update_client/2 with invalid data returns error changeset" do
       client = client_fixture()
       assert {:error, %Ecto.Changeset{}} = Clients.update_client(client, @invalid_attrs)
-      assert_equal_client(client, Clients.get_client_by_erp_and_erp_id(client.cloud_erp, client.erp_id))
+
+      assert_equal_client(
+        client,
+        Clients.get_client_by_erp_and_erp_id(client.cloud_erp, client.erp_id)
+      )
     end
 
     test "delete_client/1 deletes the client" do
@@ -245,7 +249,8 @@ defmodule Contact360.ClientsTest do
     test "update_scheduler/2 with invalid data returns error changeset" do
       scheduler = scheduler_fixture()
       assert {:error, %Ecto.Changeset{}} = Clients.update_scheduler(scheduler, @invalid_attrs)
-      scheduler_db = Clients.list_schedulers() |> Enum.find(&(&1.id == scheduler.id))
+      schedulers = Clients.list_schedulers()
+      scheduler_db = Enum.find(schedulers, &(&1.id == scheduler.id))
       assert_equal_scheduler(scheduler, scheduler_db)
     end
   end

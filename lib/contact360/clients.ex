@@ -8,6 +8,7 @@ defmodule Contact360.Clients do
 
   alias Contact360.Clients.Client
   alias Contact360.Clients.Month
+  alias Contact360.Clients.Scheduler
 
   @needed_scopes [
     "kb_invoice_show",
@@ -91,9 +92,8 @@ defmodule Contact360.Clients do
       user.token |> BexioApiClient.new() |> BexioApiClient.Others.fetch_company_profiles()
 
     with {:ok, changeset} <- client_changeset(existing_client, user, company),
-         {:ok, _tenant} <- create_triplex_if_needed(:bexio, user.company_id),
-         {:ok, client} <- upsert_client(changeset, existing_client == nil) do
-      {:ok, client}
+         {:ok, _tenant} <- create_triplex_if_needed(:bexio, user.company_id) do
+      upsert_client(changeset, existing_client == nil)
     end
   end
 
@@ -127,10 +127,10 @@ defmodule Contact360.Clients do
   defp create_triplex_if_needed(erp, id) do
     triplex_id = tenant_name(erp, id)
 
-    if not Triplex.exists?(triplex_id) do
-      Triplex.create(triplex_id)
-    else
+    if Triplex.exists?(triplex_id) do
       {:ok, triplex_id}
+    else
+      Triplex.create(triplex_id)
     end
   end
 
@@ -146,7 +146,7 @@ defmodule Contact360.Clients do
     end
   end
 
-  def registering_user_valid?(_), do: :not_valid
+  def registering_user_valid?(_user), do: :not_valid
 
   defp enough_scopes?(scopes, needed),
     do: Enum.all?(needed, fn needed_scope -> Enum.member?(scopes, needed_scope) end)
@@ -167,7 +167,7 @@ defmodule Contact360.Clients do
   end
 
   defp can_view_all?(%{show: :all}), do: true
-  defp can_view_all?(_), do: false
+  defp can_view_all?(_permission), do: false
 
   def tenant_name(cloud_erp, erp_id),
     do: "#{cloud_erp}_#{erp_id}"
@@ -242,7 +242,7 @@ defmodule Contact360.Clients do
       [%Month{}, ...]
 
   """
-  def list_invoiceable_months() do
+  def list_invoiceable_months do
     q =
       from m in Month,
         where: is_nil(m.invoice_date),
@@ -333,8 +333,6 @@ defmodule Contact360.Clients do
   def change_month(%Month{} = month, attrs \\ %{}) do
     Month.update_changeset(month, attrs)
   end
-
-  alias Contact360.Clients.Scheduler
 
   @doc """
   Returns the list of schedulers.

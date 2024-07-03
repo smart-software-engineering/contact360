@@ -1,8 +1,8 @@
 defmodule Contact360Web.RegistrationController do
   use Contact360Web, :controller
 
-  alias Contact360Web.CoreComponents
   alias Contact360.Clients
+  alias Contact360Web.CoreComponents
 
   def step1(conn, _params) do
     render(conn, :step1, layout: false)
@@ -74,7 +74,7 @@ defmodule Contact360Web.RegistrationController do
       :needs_more_permissions ->
         [gettext("Dem Benutzer fehlen in Bexio Berechtigungen!")]
 
-      _ ->
+      _registering_user_valid ->
         false
     end
   end

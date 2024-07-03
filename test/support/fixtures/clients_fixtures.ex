@@ -1,10 +1,10 @@
 defmodule Contact360.ClientsFixtures do
-  alias Contact360.Repo
-
   @moduledoc """
   This module defines test helpers for creating
   entities via the `Contact360.Clients` context.
   """
+
+  alias Contact360.Repo
 
   @doc """
   Generate a client.

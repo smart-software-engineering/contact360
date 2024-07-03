@@ -1,4 +1,8 @@
 defmodule Contact360Web.RegistrationHelper do
+  @moduledoc """
+  Helper functions for the registration process
+  """
+
   use Contact360Web, :live_component
 
   def registration_header(assigns) do

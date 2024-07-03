@@ -1,4 +1,8 @@
 defmodule Contact360.Clients.Month do
+  @moduledoc """
+  The Month schema per client schema (for statistics and billing).
+  """
+
   use Ecto.Schema
   import Ecto.Changeset
 
