@@ -2,6 +2,8 @@ defmodule Contact360Web.RegistrationController do
   use Contact360Web, :controller
 
   alias Contact360.Clients
+  alias Contact360.Clients.BexioRegistration
+
   alias Contact360Web.CoreComponents
 
   def step1(conn, _params) do
@@ -39,12 +41,11 @@ defmodule Contact360Web.RegistrationController do
     case Clients.register_bexio_client(user) do
       {:ok, client} ->
         conn
-        # |> configure_session(drop: true)
+        |> configure_session(drop: true)
         |> render(:step3, layout: false, client: client, errors: nil)
 
       {:error, %Ecto.Changeset{} = changeset} ->
-        conn
-        |> render(:step3,
+        render(:conn, :step3,
           layout: false,
           client: nil,
           errors:
@@ -54,7 +55,7 @@ defmodule Contact360Web.RegistrationController do
   end
 
   defp valid_user_for_registration?(user) do
-    case Clients.registering_user_valid?(user) do
+    case BexioRegistration.registering_user_valid?(user) do
       :valid ->
         []
 

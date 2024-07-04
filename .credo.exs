@@ -164,7 +164,6 @@
           # Custom by me
           {Credo.Check.Consistency.UnusedVariableNames, []},
           {Credo.Check.Readability.SingleFunctionToBlockPipe, []},
-          {Credo.Check.Readability.SinglePipe, []},
           {Credo.Check.Design.SkipTestWithoutComment, []},
           {Credo.Check.Refactor.IoPuts, []},
           {Credo.Check.Readability.StrictModuleLayout, []},
@@ -189,6 +188,7 @@
           {Credo.Check.Readability.OneArityFunctionInPipe, []},
           {Credo.Check.Readability.OnePipePerLine, []},
           {Credo.Check.Readability.SeparateAliasRequire, []},
+          {Credo.Check.Readability.SinglePipe, []},
           {Credo.Check.Readability.Specs, []},
           {Credo.Check.Readability.WithCustomTaggedTuple, []},
           {Credo.Check.Refactor.ABCSize, []},

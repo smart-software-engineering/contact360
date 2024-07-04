@@ -1,5 +1,5 @@
 defmodule Contact360Web.RegistrationControllerTest do
-  use Contact360Web.ConnCase, async: true
+  use Contact360Web.ConnCase
 
   # TODO rewrite this tests completely
   @tag :skip

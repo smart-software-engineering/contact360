@@ -1,5 +1,5 @@
 defmodule Contact360.ClientsTest do
-  use Contact360.DataCase, async: true
+  use Contact360.DataCase
 
   alias Contact360.Clients
 
@@ -41,7 +41,6 @@ defmodule Contact360.ClientsTest do
       refute Clients.get_client_by_erp_and_erp_id(client.cloud_erp, "abc")
     end
 
-    @tag :skip
     test "create_client/1 with valid data creates a client" do
       valid_attrs = %{
         active: true,
@@ -49,13 +48,27 @@ defmodule Contact360.ClientsTest do
         company_name: "some company_name",
         registration_email: "me2@world.com",
         registration_user_id: 1,
-        scopes: ["a"],
+        login_id: "123456",
+        scopes: [
+          "kb_invoice_show",
+          "openid",
+          "offline_access",
+          "contact_show",
+          "note_show",
+          "kb_offer_show",
+          "kb_order_show"
+        ],
         features: ["items"],
         cloud_erp: "bexio",
-        unchargeable: false
+        unchargeable: false,
+        refresh_token: "rft",
+        token: "token",
+        email: "myman@nomandsland.xxx"
       }
 
-      assert {:ok, %Client{} = client} = Clients.register_bexio_client(valid_attrs)
+      test_result = Clients.register_bexio_client(valid_attrs)
+
+      assert {:ok, %Client{} = client} = test_result
       assert client.active == true
       assert client.company_id == "55"
       assert client.company_name == "some company_name"

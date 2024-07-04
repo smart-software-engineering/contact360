@@ -55,8 +55,6 @@ defmodule Contact360.Clients.Client do
     |> unique_constraint([:cloud_erp, :erp_id])
     |> validate_refresh_token()
     |> validate_format(:registration_email, @email_regex)
-
-    # TODO: validate email
   end
 
   defp validate_refresh_token(%Ecto.Changeset{} = changeset) do

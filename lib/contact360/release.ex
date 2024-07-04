@@ -31,7 +31,6 @@ defmodule Contact360.Release do
     {:ok, _fun_return, _apps} =
       Ecto.Migrator.with_repo(repo, &Ecto.Migrator.run(&1, :down, to: version))
 
-    # TODO what is the result??
     Ecto.Migrator.with_repo(
       repo,
       fn r ->

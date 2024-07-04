@@ -17,7 +17,6 @@ defmodule Contact360.Application do
       # Start a worker by calling: Contact360.Worker.start_link(arg)
       # {Contact360.Worker, arg},
       Contact360.Scheduler.BexioStaticDataStartup,
-      # TODO: start bexio supervisor below...
       # Start to serve requests, typically the last entry
       Contact360Web.Endpoint
     ]

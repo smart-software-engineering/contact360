@@ -8,7 +8,7 @@ import Config
 config :contact360, Contact360.Repo,
   username: "postgres",
   password: "postgres",
-  hostname: "localhost",
+  hostname: System.get_env("DB_TEST_HOSTNAME") || "localhost",
   database: "contact360_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: System.schedulers_online() * 2
@@ -22,6 +22,9 @@ config :contact360, Contact360Web.Endpoint,
 
 # In test we don't send emails.
 config :contact360, Contact360.Mailer, adapter: Swoosh.Adapters.Test
+
+# Bexio Module configuration
+config :contact360, :bexio, module: Contact360.Bexio.BexioApiFaker
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false

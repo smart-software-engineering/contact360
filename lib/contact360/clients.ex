@@ -6,19 +6,10 @@ defmodule Contact360.Clients do
   import Ecto.Query, warn: false
   alias Contact360.Repo
 
+  alias Contact360.Clients.BexioRegistration
   alias Contact360.Clients.Client
   alias Contact360.Clients.Month
   alias Contact360.Clients.Scheduler
-
-  @needed_scopes [
-    "kb_invoice_show",
-    "openid",
-    "offline_access",
-    "contact_show",
-    "note_show",
-    "kb_offer_show",
-    "kb_order_show"
-  ]
 
   @doc """
   Returns the number of active clients currently registered with the system.
@@ -80,51 +71,26 @@ defmodule Contact360.Clients do
       {:error, %Ecto.Changeset{}}
   """
   def register_bexio_client(user) do
-    user
-    |> registering_user_valid?()
-    |> do_register_bexio_client(user)
-  end
+    case BexioRegistration.register_bexio_client(user) do
+      {:bexio, changeset, company_id, insert?} ->
+        create_client({:bexio, changeset, company_id, insert?})
 
-  defp do_register_bexio_client(:valid, user) do
-    existing_client = Repo.get_by(Client, cloud_erp: :bexio, erp_id: user.company_id)
-
-    {:ok, [company]} =
-      user.token |> BexioApiClient.new() |> BexioApiClient.Others.fetch_company_profiles()
-
-    with {:ok, changeset} <- client_changeset(existing_client, user, company),
-         {:ok, _tenant} <- create_triplex_if_needed(:bexio, user.company_id) do
-      upsert_client(changeset, existing_client == nil)
+      {:error, error} ->
+        {:error, error}
     end
   end
 
-  defp client_changeset(existing_client, user, company) do
-    client =
-      Client.changeset(existing_client || %Client{}, %{
-        cloud_erp: :bexio,
-        erp_id: user.company_id,
-        billing_email: company.mail,
-        billing_address:
-          company.name <>
-            "\n" <>
-            company.address <>
-            "\n" <> company.address_nr <> "\n" <> company.postcode <> " " <> company.city,
-        active: true,
-        company_name: company.name,
-        registration_user_id: user.login_id,
-        registration_email: user.email,
-        refresh_token: user.refresh_token,
-        scopes: user.scopes,
-        features: ["clients", "items"],
-        action: "registration"
-      })
-
-    if client.valid?, do: {:ok, client}, else: {:client_invalid, client.errors}
+  def create_client({erp, changeset, company_id, insert?}) do
+    case create_triplex_if_needed(erp, company_id) do
+      {:ok, _tenant} -> upsert_client(changeset, insert?)
+      {:error, error} -> {:error, error}
+    end
   end
 
   defp upsert_client(client, true), do: Repo.insert(client)
   defp upsert_client(client, false), do: Repo.update(client)
 
-  defp create_triplex_if_needed(erp, id) do
+  def create_triplex_if_needed(erp, id) do
     triplex_id = tenant_name(erp, id)
 
     if Triplex.exists?(triplex_id) do
@@ -134,43 +100,7 @@ defmodule Contact360.Clients do
     end
   end
 
-  @spec registering_user_valid?(map) ::
-          :not_valid | :no_offline_access | :needs_more_scopes | :needs_more_permissions | :valid
-
-  def registering_user_valid?(%{refresh_token: refresh_token, token: token, scopes: scopes}) do
-    cond do
-      refresh_token == nil -> :no_offline_access
-      not enough_scopes?(scopes, @needed_scopes) -> :needs_more_scopes
-      not enough_permissions?(token) -> :needs_more_permissions
-      true -> :valid
-    end
-  end
-
-  def registering_user_valid?(_user), do: :not_valid
-
-  defp enough_scopes?(scopes, needed),
-    do: Enum.all?(needed, fn needed_scope -> Enum.member?(scopes, needed_scope) end)
-
-  defp enough_permissions?(token) do
-    {:ok, access_information} =
-      token
-      |> BexioApiClient.new()
-      |> BexioApiClient.Others.get_access_information()
-
-    permissions = access_information.permissions
-
-    can_view_all?(permissions.article) and
-      can_view_all?(permissions.contact) and
-      can_view_all?(permissions.kb_offer) and
-      can_view_all?(permissions.kb_order) and
-      can_view_all?(permissions.kb_invoice)
-  end
-
-  defp can_view_all?(%{show: :all}), do: true
-  defp can_view_all?(_permission), do: false
-
-  def tenant_name(cloud_erp, erp_id),
-    do: "#{cloud_erp}_#{erp_id}"
+  def tenant_name(cloud_erp, erp_id), do: "#{cloud_erp}_#{erp_id}"
 
   @doc """
   Updates a client.

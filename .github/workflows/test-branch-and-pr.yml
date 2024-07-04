@@ -5,24 +5,35 @@
 
 name: Elixir CI
 
-on:
-  push:
-    branches:
-      - '**'
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch: {}
+on: [push, pull_request, workflow_dispatch]
 
 permissions:
   contents: read
 
 jobs:
-  build:
-
-    name: Build and test
+  # Label of the container job
+  container-job:
+    # Containers must run in Linux based operating systems
     runs-on: ubuntu-latest
 
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
     steps:
     - uses: actions/checkout@v4
     - name: Set up Elixir
@@ -40,5 +51,9 @@ jobs:
       run: mix deps.get
     - name: Run tests
       run: mix test
+      env:
+        DB_TEST_HOSTNAME: postgres
     - name: Run Credo
       run: mix credo --no-color
+      env:
+        DB_TEST_HOSTNAME: postgres

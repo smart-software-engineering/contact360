@@ -1,4 +1,3 @@
-# TODO rewrite this into a supervisor and every scheduler into a genserver...
 defmodule Contact360.Scheduler.BexioStaticDataScheduler do
   @moduledoc """
   This module defines all functionality that is needed to load static data from bexio per client. While currently self-triggering
