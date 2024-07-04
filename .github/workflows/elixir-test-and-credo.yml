@@ -96,8 +96,6 @@ jobs:
         mix ecto.migrate
     - name: Run tests
       run: mix test
-      env:
-        DB_TEST_HOSTNAME: postgres
     - name: Run Credo
       run: mix credo --no-color
 

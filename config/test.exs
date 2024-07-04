@@ -8,7 +8,7 @@ import Config
 config :contact360, Contact360.Repo,
   username: "postgres",
   password: "postgres",
-  hostname: System.get_env("DB_TEST_HOSTNAME") || "localhost",
+  hostname: "localhost",
   database: "contact360_test#{System.get_env("MIX_TEST_PARTITION")}",
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: System.schedulers_online() * 2
