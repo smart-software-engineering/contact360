@@ -1,3 +1,4 @@
+# credo:disable-for-this-file
 defmodule Contact360.TenantCase do
   @moduledoc false
 

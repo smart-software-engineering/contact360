@@ -1,6 +1,6 @@
 defmodule Contact360.ClientsTest do
-  use Contact360.DataCase
-  use Contact360.TenantCase
+  use Contact360.DataCase, async: false
+  use Contact360.TenantCase, async: false
 
   alias Contact360.Clients
 
