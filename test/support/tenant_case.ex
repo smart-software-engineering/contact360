@@ -1,4 +1,6 @@
 defmodule Contact360.TenantCase do
+  @moduledoc false
+
   use ExUnit.CaseTemplate
 
   setup_all _tags do
@@ -10,24 +12,26 @@ defmodule Contact360.TenantCase do
     Ecto.Adapters.SQL.Sandbox.mode(Contact360.Repo, :auto)
 
     # TODO create one tenant per ERP and not more...
-    changeset = Contact360.Clients.Client.changeset(%Contact360.Clients.Client{}, %{
-      refresh_token: "rft",
-      erp_id: "123456",
-      company_name: "example",
-      registration_email: "unknown@nomandsland.xxx",
-      registration_user_id: "1",
-      cloud_erp: :bexio,
-      scopes: [
-        "kb_invoice_show",
-        "openid",
-        "offline_access",
-        "contact_show",
-        "note_show",
-        "kb_offer_show",
-        "kb_order_show"
-      ],
-      features: ["clients", "items"]
-    })
+    changeset =
+      Contact360.Clients.Client.changeset(%Contact360.Clients.Client{}, %{
+        refresh_token: "rft",
+        erp_id: "123456",
+        company_name: "example",
+        registration_email: "unknown@nomandsland.xxx",
+        registration_user_id: "1",
+        cloud_erp: :bexio,
+        scopes: [
+          "kb_invoice_show",
+          "openid",
+          "offline_access",
+          "contact_show",
+          "note_show",
+          "kb_offer_show",
+          "kb_order_show"
+        ],
+        features: ["clients", "items"]
+      })
+
     {:ok, tenant} = Contact360.Clients.create_client({:bexio, changeset, "123456", true})
 
     on_exit(fn ->

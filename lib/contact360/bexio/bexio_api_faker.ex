@@ -3,7 +3,7 @@ defmodule Contact360.Bexio.BexioApiFaker do
   This module is responsible for faking the Bexio API in case of tests or offline access.
   """
 
-  def new(_) do
+  def new(_args) do
     %{}
   end
 
@@ -51,42 +51,43 @@ defmodule Contact360.Bexio.BexioApiFaker do
     @moduledoc false
     def fetch_company_profiles(_req) do
       {:ok,
-      [
-        %BexioApiClient.Others.CompanyProfile{
-          id: 1,
-          name: "Testing Company AG",
-          address: "Irgendwo 99",
-          address_nr: "",
-          postcode: "9999",
-          city: "Unter dem Monde",
-          country_id: 1,
-          legal_form: :corporation,
-          country_name: "Schweiz",
-          mail: "",
-          phone_fixed: "",
-          phone_mobile: "",
-          fax: "",
-          url: "",
-          skype_name: "",
-          facebook_name: "",
-          twitter_name: "",
-          description: "",
-          ust_id_nr: "CHE-123.456.789",
-          mwst_nr: "CHE-123.456.789 MWST",
-          trade_register_nr: nil,
-          own_logo?: true,
-          public_profile?: false,
-          logo_public?: false,
-          address_public?: false,
-          phone_public?: false,
-          mobile_public?: false,
-          fax_public?: false,
-          mail_public?: false,
-          url_public?: false,
-          skype_public?: false,
-          logo_base64: nil
-        }
-      ]}    end
+       [
+         %BexioApiClient.Others.CompanyProfile{
+           id: 1,
+           name: "Testing Company AG",
+           address: "Irgendwo 99",
+           address_nr: "",
+           postcode: "9999",
+           city: "Unter dem Monde",
+           country_id: 1,
+           legal_form: :corporation,
+           country_name: "Schweiz",
+           mail: "",
+           phone_fixed: "",
+           phone_mobile: "",
+           fax: "",
+           url: "",
+           skype_name: "",
+           facebook_name: "",
+           twitter_name: "",
+           description: "",
+           ust_id_nr: "CHE-123.456.789",
+           mwst_nr: "CHE-123.456.789 MWST",
+           trade_register_nr: nil,
+           own_logo?: true,
+           public_profile?: false,
+           logo_public?: false,
+           address_public?: false,
+           phone_public?: false,
+           mobile_public?: false,
+           fax_public?: false,
+           mail_public?: false,
+           url_public?: false,
+           skype_public?: false,
+           logo_base64: nil
+         }
+       ]}
+    end
 
     def get_access_information(_req) do
       {:ok,

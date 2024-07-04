@@ -1,4 +1,6 @@
 defmodule Contact360.ClientsFixtures do
+  @moduledoc false
+
   @doc """
   Generate a month.
   """

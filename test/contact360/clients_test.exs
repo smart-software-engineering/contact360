@@ -25,14 +25,17 @@ defmodule Contact360.ClientsTest do
       assert assert_equal_client(hd(clients), tenant)
     end
 
-    test "get_client_by_cloud_erp_and_company_name/1 returns the client with correct information", %{tenant: tenant} do
+    test "get_client_by_cloud_erp_and_company_name/1 returns the client with correct information",
+         %{tenant: tenant} do
       assert_equal_client(
         tenant,
         Clients.get_client_by_erp_and_erp_id(tenant.cloud_erp, tenant.erp_id)
       )
     end
 
-    test "get_client_by_cloud_erp_and_company_name/1 returns nothing if either one is wrong", %{tenant: tenant} do
+    test "get_client_by_cloud_erp_and_company_name/1 returns nothing if either one is wrong", %{
+      tenant: tenant
+    } do
       refute Clients.get_client_by_erp_and_erp_id(:unknown, tenant.erp_id)
       refute Clients.get_client_by_erp_and_erp_id(tenant.cloud_erp, "abc")
     end
