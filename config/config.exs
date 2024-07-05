@@ -33,6 +33,13 @@ config :contact360, Contact360Web.Endpoint,
 # at the `config/runtime.exs`.
 config :contact360, Contact360.Mailer, adapter: Swoosh.Adapters.Local
 
+# configure oban
+config :contact360, Oban,
+  engine: Oban.Engines.Basic,
+  # need to see but probably need dynamic queues, probably one per client
+  queues: [default: 10],
+  repo: Contact360.Repo
+
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",

@@ -63,6 +63,7 @@ defmodule Contact360.MixProject do
       {:ueberauth, "~> 0.10.8"},
       {:ueberauth_bexio, "~> 0.1.3"},
       {:bexio_api_client, "~> 0.5.2"},
+      {:oban, "~> 2.17"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end

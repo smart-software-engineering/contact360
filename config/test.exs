@@ -26,6 +26,9 @@ config :contact360, Contact360.Mailer, adapter: Swoosh.Adapters.Test
 # Bexio Module configuration
 config :contact360, :bexio, module: Contact360.Bexio.BexioApiFaker
 
+# prevent oban from running jobs and plugins
+config :contact360, Oban, testing: :inline
+
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
 

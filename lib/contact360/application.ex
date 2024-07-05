@@ -9,6 +9,7 @@ defmodule Contact360.Application do
     children = [
       Contact360Web.Telemetry,
       Contact360.Repo,
+      {Oban, Application.fetch_env!(:contact360, Oban)},
       {DNSCluster, query: Application.get_env(:contact360, :dns_cluster_query) || :ignore},
       {Registry, keys: :unique, name: Contact360.Registry},
       {Phoenix.PubSub, name: Contact360.PubSub},
