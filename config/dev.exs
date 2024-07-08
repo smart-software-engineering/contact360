@@ -29,10 +29,6 @@ config :contact360, Contact360Web.Endpoint,
     tailwind: {Tailwind, :install_and_run, [:contact360, ~w(--watch)]}
   ]
 
-# Bexio Module configuration
-# Theoretically a mock for offline would be nice, but does it make sense?
-config :contact360, :bexio, module: BexioApiClient
-
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed
@@ -68,6 +64,10 @@ config :contact360, Contact360Web.Endpoint,
 
 # Enable dev routes for dashboard and mailbox
 config :contact360, dev_routes: true
+
+# Enable the fake API, which involves two changes: base url for the bexio client and the faker API
+config :contact360, bexio_faker: true
+config :contact360, BexioApiClient, base_url: "http://localhost:4000/bexio-faker/"
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"

@@ -8,9 +8,6 @@ import Config
 config :contact360, Contact360Web.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json"
 
-# Bexio Module configuration
-config :contact360, :bexio, module: BexioApiClient
-
 # Configures Swoosh API Client
 config :swoosh, api_client: Swoosh.ApiClient.Finch, finch_name: Contact360.Finch
 

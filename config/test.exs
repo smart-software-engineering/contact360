@@ -23,8 +23,9 @@ config :contact360, Contact360Web.Endpoint,
 # In test we don't send emails.
 config :contact360, Contact360.Mailer, adapter: Swoosh.Adapters.Test
 
-# Bexio Module configuration
-config :contact360, :bexio, module: Contact360.Bexio.BexioApiFaker
+# Enable the fake API, which involves two changes: base url for the bexio client and the faker API
+config :contact360, bexio_faker: true
+config :contact360, BexioApiClient, base_url: "http://localhost:4000/bexio-faker/"
 
 # prevent oban from running jobs and plugins
 config :contact360, Oban, testing: :inline

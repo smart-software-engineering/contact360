@@ -28,6 +28,13 @@ defmodule Contact360Web.Router do
     get "/register/step3", RegistrationController, :step3
   end
 
+  # Create a faker endpoint for Bexio Replacement
+  if Application.compile_env(:contact360, :bexio_faker) do
+    scope "/bexio-faker", Contact360.Bexio do
+      forward "/bexio-faker", BexioFaker
+    end
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", Contact360Web do
   #   pipe_through :api

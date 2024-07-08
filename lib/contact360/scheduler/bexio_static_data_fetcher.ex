@@ -3,20 +3,18 @@ defmodule Contact360.Scheduler.BexioStaticDataFetcher do
   This module is responsible for fetching static data from the Bexio API.
   """
 
-  @api_module Application.compile_env(:contact360, [:bexio, :module])
+  def fetch_contact_groups(client), do: BexioApiClient.Contacts.fetch_contact_groups(client)
 
-  def fetch_contact_groups(client), do: api_module(Contacts).fetch_contact_groups(client)
+  def fetch_contact_sectors(client), do: BexioApiClient.Contacts.fetch_contact_sectors(client)
 
-  def fetch_contact_sectors(client), do: api_module(Contacts).fetch_contact_sectors(client)
+  def fetch_salutations(client), do: BexioApiClient.Contacts.fetch_salutations(client)
 
-  def fetch_salutations(client), do: api_module(Contacts).fetch_salutations(client)
+  def fetch_payment_types(client), do: BexioApiClient.Others.fetch_payment_types(client)
 
-  def fetch_payment_types(client), do: api_module(Others).fetch_payment_types(client)
-
-  def fetch_titles(client), do: api_module(Contacts).fetch_titles(client)
+  def fetch_titles(client), do: BexioApiClient.Contacts.fetch_titles(client)
 
   def fetch_accounts(client) do
-    case api_module(Accounting).fetch_accounts(client) do
+    case BexioApiClient.Accounting.fetch_accounts(client) do
       {:ok, accounts} -> {:ok, remap_accounts_into_map(accounts)}
       x -> x
     end
@@ -35,7 +33,7 @@ defmodule Contact360.Scheduler.BexioStaticDataFetcher do
   end
 
   def fetch_currencies(client) do
-    case api_module(Accounting).fetch_currencies(client) do
+    case BexioApiClient.Accounting.fetch_currencies(client) do
       {:ok, currencies} -> {:ok, remap_currencies_into_currencies(currencies)}
       x -> x
     end
@@ -53,7 +51,7 @@ defmodule Contact360.Scheduler.BexioStaticDataFetcher do
   end
 
   def fetch_languages(client) do
-    case api_module(Others).fetch_languages(client) do
+    case BexioApiClient.Others.fetch_languages(client) do
       {:ok, languages} -> {:ok, remap_languages_into_map(languages)}
       x -> x
     end
@@ -71,7 +69,7 @@ defmodule Contact360.Scheduler.BexioStaticDataFetcher do
   end
 
   def fetch_countries(client) do
-    case api_module(Others).fetch_countries(client) do
+    case BexioApiClient.Others.fetch_countries(client) do
       {:ok, countries} -> {:ok, remap_countries_into_map(countries)}
       x -> x
     end
@@ -89,15 +87,13 @@ defmodule Contact360.Scheduler.BexioStaticDataFetcher do
     |> Enum.into(%{})
   end
 
-  def fetch_units(client), do: api_module(Others).fetch_units(client)
+  def fetch_units(client), do: BexioApiClient.Others.fetch_units(client)
 
   def fetch_permissions(token),
-    do: create_token_client(token) |> api_module(Others).get_access_information()
+    do: create_token_client(token) |> BexioApiClient.Others.get_access_information()
 
   def fetch_company_profiles(token),
-    do: create_token_client(token) |> api_module(Others).fetch_company_profiles()
+    do: create_token_client(token) |> BexioApiClient.Others.fetch_company_profiles()
 
-  defp create_token_client(token), do: @api_module.new(token)
-
-  defp api_module(name), do: Module.concat(@api_module, name)
+  defp create_token_client(token), do: BexioApiClient.new(token)
 end
