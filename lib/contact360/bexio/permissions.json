@@ -1,0 +1,253 @@
+{
+  "components": [
+      "api2_access",
+      "api3_access",
+      "bill_administration",
+      "admin",
+      "user_administration",
+      "vat_settings_pro",
+      "global_search",
+      "communication_center",
+      "billing_discount_existingcustomers",
+      "fm",
+      "accountant_management",
+      "addon_management",
+      "company_user_management",
+      "payment_method",
+      "reminder_pro",
+      "exchange_rates_management",
+      "payment_services_management",
+      "kb_client_account_management",
+      "export_settings_export_sales",
+      "export_settings_export_products",
+      "export_settings_export_tasks",
+      "sales_wizard_other",
+      "analytics",
+      "file_upload",
+      "contact",
+      "todo",
+      "history",
+      "project",
+      "project_show_conditions",
+      "article",
+      "monitoring",
+      "stockmanagement",
+      "stockmanagement_changes",
+      "dashboard_widget_sales",
+      "banking",
+      "banking_sync",
+      "banking_direct",
+      "banking_ubs_camt",
+      "banking_kbag_blink",
+      "banking_kbsz_blink",
+      "banking_vabe_blink",
+      "accounting_reports",
+      "kb_offer",
+      "kb_order",
+      "kb_invoice",
+      "kb_credit_voucher",
+      "kb_delivery",
+      "kb_account_statement",
+      "expense",
+      "kb_bill",
+      "kb_article_order",
+      "kb_wizard_recurring_invoices",
+      "kb_wizard_payments",
+      "kb_wizard_reminder",
+      "kb_wizard_v11",
+      "network",
+      "document_designer",
+      "manual_entries",
+      "payroll",
+      "vendor_credit_notes",
+      "spa_bills",
+      "spa_expenses"
+  ],
+  "permissions": {
+      "payroll": {
+          "activation": "disabled"
+      },
+      "lean_sync": {
+          "activation": "enabled"
+      },
+      "analytics": {
+          "activation": "enabled",
+          "download": "all"
+      },
+      "file_upload": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "document_designer": {
+          "activation": "enabled"
+      },
+      "fm": {
+          "activation": "enabled"
+      },
+      "accounting_reports": {
+          "activation": "enabled"
+      },
+      "bill_administration": {
+          "activation": "enabled"
+      },
+      "user_administration": {
+          "activation": "enabled"
+      },
+      "admin": {
+          "activation": "enabled"
+      },
+      "banking_direct": {
+          "activation": "enabled"
+      },
+      "banking_sync": {
+          "activation": "enabled"
+      },
+      "banking": {
+          "activation": "enabled",
+          "edit": "all"
+      },
+      "pingen": {
+          "activation": "enabled"
+      },
+      "mailchimp": {
+          "activation": "enabled"
+      },
+      "gdrive": {
+          "activation": "enabled"
+      },
+      "boxnet": {
+          "activation": "enabled"
+      },
+      "dropbox": {
+          "activation": "enabled"
+      },
+      "project_show_conditions": {
+          "activation": "enabled"
+      },
+      "kb_wizard_v11": {
+          "activation": "enabled"
+      },
+      "kb_wizard_reminder": {
+          "activation": "enabled"
+      },
+      "kb_wizard_payments": {
+          "activation": "enabled"
+      },
+      "kb_wizard_recurring_invoices": {
+          "activation": "enabled"
+      },
+      "kb_account_statement": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "expense": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "kb_bill": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "kb_article_order": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "kb_delivery": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "kb_credit_voucher": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "kb_invoice": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "kb_order": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "kb_offer": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "dashboard_widget_sales": {
+          "activation": "enabled"
+      },
+      "file_manager_share": {
+          "activation": "enabled"
+      },
+      "stockmanagement": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "monitoring": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "writer": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "article": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "project": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "marketing": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "history": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "todo": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "calendar": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "file_manager": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "contact": {
+          "activation": "enabled",
+          "edit": "all",
+          "show": "all"
+      },
+      "stockmanagement_changes": {
+          "edit": "all"
+      },
+      "vendor_credit_notes": {
+          "activation": "enabled"
+      }
+  }
+}

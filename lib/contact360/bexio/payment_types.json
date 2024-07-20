@@ -1,0 +1,30 @@
+[
+    {
+        "id": 1,
+        "name": "Vorauszahlung"
+    },
+    {
+        "id": 2,
+        "name": "Barzahlung"
+    },
+    {
+        "id": 3,
+        "name": "EC Karte"
+    },
+    {
+        "id": 4,
+        "name": "Rechnung"
+    },
+    {
+        "id": 5,
+        "name": "Nachnahme"
+    },
+    {
+        "id": 6,
+        "name": "Kreditkarte"
+    },
+    {
+        "id": 7,
+        "name": "Bankeinzug/LSV"
+    }
+]

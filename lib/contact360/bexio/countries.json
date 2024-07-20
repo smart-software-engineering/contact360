@@ -1,0 +1,230 @@
+[
+    {
+        "id": 1,
+        "name": "Schweiz",
+        "name_short": "CH",
+        "iso_3166_alpha2": "CH"
+    },
+    {
+        "id": 2,
+        "name": "Deutschland",
+        "name_short": "D",
+        "iso_3166_alpha2": "DE"
+    },
+    {
+        "id": 3,
+        "name": "Österreich",
+        "name_short": "A",
+        "iso_3166_alpha2": "AT"
+    },
+    {
+        "id": 4,
+        "name": "Brasilien",
+        "name_short": "BR",
+        "iso_3166_alpha2": "BR"
+    },
+    {
+        "id": 5,
+        "name": "Kanada",
+        "name_short": "CDN",
+        "iso_3166_alpha2": "CA"
+    },
+    {
+        "id": 6,
+        "name": "China",
+        "name_short": "CN",
+        "iso_3166_alpha2": "CN"
+    },
+    {
+        "id": 7,
+        "name": "Tschechische Republik",
+        "name_short": "CZ",
+        "iso_3166_alpha2": "CZ"
+    },
+    {
+        "id": 8,
+        "name": "Frankreich",
+        "name_short": "F",
+        "iso_3166_alpha2": "FR"
+    },
+    {
+        "id": 9,
+        "name": "Grossbritannien",
+        "name_short": "GB",
+        "iso_3166_alpha2": "GB"
+    },
+    {
+        "id": 10,
+        "name": "Italien",
+        "name_short": "I",
+        "iso_3166_alpha2": "IT"
+    },
+    {
+        "id": 11,
+        "name": "Liechtenstein",
+        "name_short": "FL",
+        "iso_3166_alpha2": "LI"
+    },
+    {
+        "id": 12,
+        "name": "Hong Kong",
+        "name_short": "HK",
+        "iso_3166_alpha2": "HK"
+    },
+    {
+        "id": 13,
+        "name": "Portugal",
+        "name_short": "PT",
+        "iso_3166_alpha2": "PT"
+    },
+    {
+        "id": 14,
+        "name": "Ägypten",
+        "name_short": "EG",
+        "iso_3166_alpha2": "EG"
+    },
+    {
+        "id": 15,
+        "name": "USA",
+        "name_short": "USA",
+        "iso_3166_alpha2": "US"
+    },
+    {
+        "id": 16,
+        "name": "Spanien",
+        "name_short": "ES",
+        "iso_3166_alpha2": "ES"
+    },
+    {
+        "id": 17,
+        "name": "Australien",
+        "name_short": "AU",
+        "iso_3166_alpha2": "AU"
+    },
+    {
+        "id": 18,
+        "name": "Argentinien",
+        "name_short": "AR",
+        "iso_3166_alpha2": "AR"
+    },
+    {
+        "id": 19,
+        "name": "Malediven",
+        "name_short": "MV",
+        "iso_3166_alpha2": "MV"
+    },
+    {
+        "id": 20,
+        "name": "Bulgarien",
+        "name_short": "BG",
+        "iso_3166_alpha2": "BG"
+    },
+    {
+        "id": 21,
+        "name": "Rumänien",
+        "name_short": "RO",
+        "iso_3166_alpha2": "RO"
+    },
+    {
+        "id": 22,
+        "name": "Luxemburg",
+        "name_short": "LU",
+        "iso_3166_alpha2": "LU"
+    },
+    {
+        "id": 23,
+        "name": "Türkei",
+        "name_short": "TR",
+        "iso_3166_alpha2": "TR"
+    },
+    {
+        "id": 24,
+        "name": "Israel",
+        "name_short": "ISR",
+        "iso_3166_alpha2": "IL"
+    },
+    {
+        "id": 25,
+        "name": "Niederlande",
+        "name_short": "NL",
+        "iso_3166_alpha2": "NL"
+    },
+    {
+        "id": 26,
+        "name": "Vereinigte Arabische Emirate",
+        "name_short": "VAE",
+        "iso_3166_alpha2": "AE"
+    },
+    {
+        "id": 27,
+        "name": "Belgien",
+        "name_short": "B",
+        "iso_3166_alpha2": "BE"
+    },
+    {
+        "id": 28,
+        "name": "Singapur",
+        "name_short": "SIN",
+        "iso_3166_alpha2": "SG"
+    },
+    {
+        "id": 29,
+        "name": "Montenegro",
+        "name_short": "MTN",
+        "iso_3166_alpha2": "ME"
+    },
+    {
+        "id": 30,
+        "name": "Katar",
+        "name_short": "KAT",
+        "iso_3166_alpha2": "QA"
+    },
+    {
+        "id": 31,
+        "name": "Dänemark",
+        "name_short": "DK",
+        "iso_3166_alpha2": "DK"
+    },
+    {
+        "id": 32,
+        "name": "Schweden",
+        "name_short": "SE",
+        "iso_3166_alpha2": "SE"
+    },
+    {
+        "id": 33,
+        "name": "Malaysia",
+        "name_short": "MY",
+        "iso_3166_alpha2": "MY"
+    },
+    {
+        "id": 34,
+        "name": "Irland",
+        "name_short": "IRL",
+        "iso_3166_alpha2": "IE"
+    },
+    {
+        "id": 35,
+        "name": "Norwegen",
+        "name_short": "NO",
+        "iso_3166_alpha2": "NO"
+    },
+    {
+        "id": 36,
+        "name": "Finnland",
+        "name_short": "FI",
+        "iso_3166_alpha2": "FI"
+    },
+    {
+        "id": 37,
+        "name": "Ungarn",
+        "name_short": "HU",
+        "iso_3166_alpha2": "HU"
+    },
+    {
+        "id": 38,
+        "name": "Slowenien",
+        "name_short": "SI",
+        "iso_3166_alpha2": "SI"
+    }
+]

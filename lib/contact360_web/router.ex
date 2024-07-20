@@ -29,9 +29,9 @@ defmodule Contact360Web.Router do
   end
 
   # Create a faker endpoint for Bexio Replacement
-  if Application.compile_env(:contact360, :bexio_faker) do
+  if Application.compile_env(:contact360, :bexio_api_faker) do
     scope "/bexio-faker", Contact360.Bexio do
-      forward "/bexio-faker", BexioFaker
+      forward "/", BexioApiFaker
     end
   end
 

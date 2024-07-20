@@ -10,7 +10,19 @@ if Code.ensure_loaded?(Plug) do
     use Plug.Router
     use Plug.ErrorHandler
 
-    get "/???" do
+    get "/api/*path" do
+      IO.inspect(conn, label: "Conn on API Faker")
+
+      conn
+      |> put_resp_content_type("application/json")
+      |> send_resp(200, Jason.encode!(%{hello: "hello"}))
+
+      # READ the file (json)
+      # return it as is
+    end
+
+    get "/idp/*path" do
+      IO.inspect(conn, label: "Conn on IDP Faker")
       # READ the file (json)
       # return it as is
     end

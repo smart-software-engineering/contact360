@@ -1,0 +1,29 @@
+[
+    {
+        "id": 1,
+        "name": "Deutsch",
+        "decimal_point": ".",
+        "thousands_separator": "'",
+        "date_format_id": 1,
+        "date_format": "d.m.Y",
+        "iso_639_1": "de"
+    },
+    {
+        "id": 2,
+        "name": "Französisch",
+        "decimal_point": ".",
+        "thousands_separator": "'",
+        "date_format_id": 1,
+        "date_format": "d.m.Y",
+        "iso_639_1": "fr"
+    },
+    {
+        "id": 4,
+        "name": "Englisch",
+        "decimal_point": ".",
+        "thousands_separator": "'",
+        "date_format_id": 1,
+        "date_format": "d.m.Y",
+        "iso_639_1": "en"
+    }
+]
