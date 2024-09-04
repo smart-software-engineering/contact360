@@ -59,10 +59,10 @@ defmodule Contact360.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.2"},
       {:triplex, "~> 1.3.0"},
-      {:req, "~> 0.4.14"},
+      {:req, "~> 0.5.6"},
       {:ueberauth, "~> 0.10.8"},
       {:ueberauth_bexio, "~> 0.1.3"},
-      {:bexio_api_client, "~> 0.5.3"},
+      {:bexio_api_client, "~> 0.6.0"},
       {:oban, "~> 2.17"},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
