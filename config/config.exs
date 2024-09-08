@@ -36,7 +36,7 @@ config :contact360, Contact360.Mailer, adapter: Swoosh.Adapters.Local
 # configure oban
 config :contact360, Oban,
   engine: Oban.Engines.Basic,
-  # need to see but probably need dynamic queues, probably one per client
+  # could also be that one queue per client is the best, not sure about limitations though
   queues: [default: 10],
   repo: Contact360.Repo
 
@@ -70,9 +70,11 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
+# should have an ueberauth for local work without any need to login at all, only active in dev...
 config :ueberauth, Ueberauth,
   providers: [
-    # default scopes are easy, only the sync user needs all scopes
+    # default scopes are very low, only the sync user needs more access and that will be asked separately
+    # during the registration process
     bexio: {Ueberauth.Strategy.Bexio, [default_scope: "openid email profile"]}
   ]
 

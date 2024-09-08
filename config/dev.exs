@@ -83,8 +83,3 @@ config :phoenix_live_view,
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
-
-# Enable the fake API, which involves two changes: base url for the bexio client and the faker API
-config :contact360, :bexio_api_faker, true
-config :bexio_api_client, :req_options, base_url: "http://localhost:4000/bexio-faker/api/"
-config :bexio_api_client, :idp_url, "http://localhost:4000/bexio-faker/idp/"

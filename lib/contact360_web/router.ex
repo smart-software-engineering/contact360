@@ -14,6 +14,11 @@ defmodule Contact360Web.Router do
     plug :accepts, ["json"]
   end
 
+  pipeline :client do
+    # plug :validate_client_id
+    # plug :needs_authenticated_user
+  end
+
   scope "/", Contact360Web do
     pipe_through :browser
 
@@ -28,11 +33,10 @@ defmodule Contact360Web.Router do
     get "/register/step3", RegistrationController, :step3
   end
 
-  # Create a faker endpoint for Bexio Replacement
-  if Application.compile_env(:contact360, :bexio_api_faker) do
-    scope "/bexio-faker", Contact360.Bexio do
-      forward "/", BexioApiFaker
-    end
+  scope "/:client_id", Contact360Web do
+    pipe_through :client
+
+    live "/", ClientLive, :start
   end
 
   # Other scopes may use custom stacks.

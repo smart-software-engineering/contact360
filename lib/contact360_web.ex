@@ -41,9 +41,9 @@ defmodule Contact360Web do
       use Phoenix.Controller,
         formats: [:html, :json],
         layouts: [html: Contact360Web.Layouts]
+      use Gettext, backend: Contact360Web.Gettext
 
       import Plug.Conn
-      import Contact360Web.Gettext
 
       unquote(verified_routes())
     end
@@ -81,11 +81,12 @@ defmodule Contact360Web do
 
   defp html_helpers do
     quote do
+      use Gettext, backend: Contact360Web.Gettext
+
       # HTML escaping functionality
       import Phoenix.HTML
       # Core UI components and translation
       import Contact360Web.CoreComponents
-      import Contact360Web.Gettext
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
