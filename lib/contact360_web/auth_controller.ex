@@ -3,9 +3,21 @@ defmodule Contact360Web.AuthController do
 
   plug Ueberauth
 
+  alias Contact360Web.BexioFaker
   alias Ueberauth.Strategy.Helpers
+  import Phoenix.Component
 
   require Logger
+
+  def request(conn, %{"provider" => "faker"} = params) do
+    IO.inspect(conn.params, label: "Conn Param")
+    IO.inspect(params, label: "Param")
+
+    render(conn, "request.html",
+      callback_url: Helpers.callback_url(conn),
+      company_form: to_form(%{"company_id" => BexioFaker.client_id(), "registration" => false})
+    )
+  end
 
   def request(conn, _params) do
     render(conn, "request.html", callback_url: Helpers.callback_url(conn))
@@ -22,6 +34,32 @@ defmodule Contact360Web.AuthController do
     conn
     |> put_flash(:error, gettext("Konnte nicht angemeldet werden:") <> " #{inspect(fails)}")
     |> redirect(to: "/")
+  end
+
+  def callback(conn, %{"company_id" => company_id, "provider" => "faker"}) do
+    user = %{
+      login_id: "faker-123",
+      firstname: "Max",
+      lastname: "Muster",
+      email: "max.muster@smart.nowhere",
+      token: "faker-token",
+      token_type: "Bearer",
+      expires_at: 3600,
+      refresh_token: "refresh-123",
+      scopes: ["openid", "profile", "email", "offline_access"],
+      locale: :de_CH,
+      company_id: company_id
+    }
+
+    conn
+    |> put_session(:user, user)
+    |> redirect(to: "/register/step2")
+
+    #      _company ->
+    #        conn
+    #        |> put_session(:user, user)
+    #        |> put_session(:client, user.company_id)
+    #        |> redirect(to: "/c/#{user.company_id}")
   end
 
   def callback(%{assigns: %{ueberauth_auth: auth}} = conn, _params) do

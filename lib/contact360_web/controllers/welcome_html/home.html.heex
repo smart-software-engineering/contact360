@@ -17,10 +17,17 @@
   <div class="relative overflow-hidden pt-16">
     <div class="mx-auto max-w-7xl px-6 lg:px-8 h-12 text-center">
       <.link
+        :if={@fake_login_enabled?}
+        class="rounded-md bg-indigo-600 dark:bg-indigo-500 px-6 py-4 text-lg font-semibold text-white shadow-sm hover:bg-indigo-500 dark:hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:focus-visible:outline-indigo-500"
+        navigate={~p"/auth/faker"}
+      >
+        <%= gettext("Anmelden Faker") %>
+      </.link>
+      <.link
         class="rounded-md bg-indigo-600 dark:bg-indigo-500 px-6 py-4 text-lg font-semibold text-white shadow-sm hover:bg-indigo-500 dark:hover:bg-indigo-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:focus-visible:outline-indigo-500"
         navigate={~p"/auth/bexio"}
       >
-        <%= gettext("Anmelden") %>
+        <%= gettext("Anmelden mit Bexio") %>
       </.link>
       <.link
         class="ml-6 rounded-md bg-teal-600 dark:bg-teal-500 px-6 py-4 text-lg font-semibold text-white shadow-sm hover:bg-teal-500 dark:hover:bg-teal-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600 dark:focus-visible:outline-teal-500"

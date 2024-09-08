@@ -15,7 +15,7 @@ defmodule Contact360Web.Router do
   end
 
   pipeline :client do
-    plug :load_and_check_client
+    # plug :load_and_check_client
   end
 
   scope "/", Contact360Web do
@@ -32,7 +32,14 @@ defmodule Contact360Web.Router do
     get "/register/step3", RegistrationController, :step3
   end
 
-  scope "/:client_id", Contact360Web do
+  # Create a faker endpoint for Bexio Replacement
+  if Application.compile_env(:contact360, :bexio_api_faker) do
+    scope "/bexio-faker", Contact360Web.BexioFaker do
+      forward "/", Router
+    end
+  end
+
+  scope "/c/:client_id", Contact360Web do
     pipe_through [:browser, :client]
 
     live_session :client_live do

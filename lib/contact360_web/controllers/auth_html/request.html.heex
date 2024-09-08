@@ -1,0 +1,16 @@
+<.flash_group flash={@flash} />
+
+<h1>Login in Dev with Company ID only</h1>
+
+<p>
+  Enter the information to simulate the authentication.
+</p>
+
+<.simple_form for={@company_form} action={@callback_url} method="post">
+  <.input field={@company_form[:company_id]} type="text" label="Company ID" />
+  <.input field={@company_form[:registration]} type="checkbox" label="Registrierung?" />
+
+  <:actions>
+    <.button type="submit">Login</.button>
+  </:actions>
+</.simple_form>
