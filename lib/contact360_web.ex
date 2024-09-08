@@ -41,6 +41,7 @@ defmodule Contact360Web do
       use Phoenix.Controller,
         formats: [:html, :json],
         layouts: [html: Contact360Web.Layouts]
+
       use Gettext, backend: Contact360Web.Gettext
 
       import Plug.Conn

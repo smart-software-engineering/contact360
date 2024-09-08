@@ -15,8 +15,7 @@ defmodule Contact360Web.Router do
   end
 
   pipeline :client do
-    # plug :validate_client_id
-    # plug :needs_authenticated_user
+    plug :load_and_check_client
   end
 
   scope "/", Contact360Web do
@@ -34,9 +33,11 @@ defmodule Contact360Web.Router do
   end
 
   scope "/:client_id", Contact360Web do
-    pipe_through :client
+    pipe_through [:browser, :client]
 
-    live "/", ClientLive, :start
+    live_session :client_live do
+      live "/", ClientLive, :start
+    end
   end
 
   # Other scopes may use custom stacks.
